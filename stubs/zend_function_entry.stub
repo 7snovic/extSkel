@@ -1,0 +1,4 @@
+const zend_function_entry %EXTNAME%_functions[] = {
+	%FUNCTIONS_ENTRIES%
+	PHP_FE_END
+};

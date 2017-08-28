@@ -1,0 +1,68 @@
+%HEADER%
+
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
+#include "php.h"
+#include "ext/standard/info.h"
+#include "php_%EXTNAME%.h"
+
+%FUNCTIONS_STUB%
+
+/* {{{ PHP_RINIT_FUNCTION
+ */
+PHP_RINIT_FUNCTION(%EXTNAME%)
+{
+#if defined(ZTS) && defined(COMPILE_DL_%EXTNAMECAPS%)
+	ZEND_TSRMLS_CACHE_UPDATE();
+#endif
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ PHP_MINFO_FUNCTION
+ */
+PHP_MINFO_FUNCTION(%EXTNAME%)
+{
+	php_info_print_table_start();
+	php_info_print_table_header(2, "%EXTNAME% support", "enabled");
+	php_info_print_table_end();
+}
+/* }}} */
+
+/* {{{ arginfo
+ */
+%ARGINFO_STUB%
+/* }}} */
+
+/* {{{ %EXTNAME%_functions[]
+ */
+%FUNCTIONS_ENTRY_STUB%
+/* }}} */
+
+/* {{{ %EXTNAME%_module_entry
+ */
+zend_module_entry %EXTNAME%_module_entry = {
+	STANDARD_MODULE_HEADER,
+	"%EXTNAME%",					/* Extension name */
+	%EXTNAME%_functions,			/* zend_function_entry */
+	NULL,							/* PHP_MINIT - Module initialization */
+	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
+	PHP_RINIT(%EXTNAME%),			/* PHP_RINIT - Request initialization */
+	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
+	PHP_MINFO(%EXTNAME%),			/* PHP_MINFO - Module info */
+	PHP_%EXTNAMECAPS%_VERSION,		/* Version */
+	STANDARD_MODULE_PROPERTIES
+};
+/* }}} */
+
+#ifdef COMPILE_DL_%EXTNAMECAPS%
+# ifdef ZTS
+ZEND_TSRMLS_CACHE_DEFINE()
+# endif
+ZEND_GET_MODULE(%EXTNAME%)
+#endif
+
+%FOOTER%

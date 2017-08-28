@@ -1,0 +1,24 @@
+#!/usr/bin/env php
+<?php
+
+
+require_once "vendor/autoload.php";
+
+use hassan\extSkel\{extSkel,Analyzer};
+
+$skel = new extSkel(new Analyzer());
+
+try {
+    $skel->checkSapi();
+
+    $options = $skel->getOptions();
+    
+    $skel->run($options);
+
+} catch (\Exception $e) {
+    echo $e->getMessage();
+}
+
+
+
+exit;

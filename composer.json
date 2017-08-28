@@ -1,0 +1,24 @@
+{
+    "name": "7snovic/extSkel",
+    "author": [
+        {
+            "name": "hassan ahmed",
+            "email": "7snovic@gmail.com"
+        }
+    ],
+    "keywords": [
+        "php",
+        "php internals",
+        "extensions"
+    ],
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "hassan\\extSkel\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=5.5"
+    },
+    "prefer-stable": true
+}
