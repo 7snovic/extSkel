@@ -201,7 +201,12 @@ class Analyzer implements AnalyzerInterface
 
         $this->destDir = $options['dest-dir'];
 
-        if (!$this->compileExtension($options) or !$this->compileHeaderFile()) {
+        if (
+            !$this->compileExtension($options) or
+            !$this->compileHeaderFile() or
+            !$this->compileConfigm4File() or
+            !$this->compileConfigw32File()
+        ) {
             return false;
         }
 
@@ -257,8 +262,6 @@ class Analyzer implements AnalyzerInterface
     /**
      * Compile the header file body.
      *
-     * @param array $options
-     *
      * @return bool
      */
     public function compileHeaderFile()
@@ -277,5 +280,35 @@ class Analyzer implements AnalyzerInterface
         $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
 
         return file_put_contents($this->destDir . '/' . $phpHeader, $skeleton);
+    }
+
+    /**
+     * Compile config.m4 file.
+     *
+     * @return bool
+     */
+    public function compileConfigm4File()
+    {
+        $skeleton = file_get_contents('stubs/config.m4.stub');
+        $configm4 = "config.m4";
+
+        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
+
+        return file_put_contents($this->destDir . '/' . $configm4, $skeleton);
+    }
+
+    /**
+     * Compile config.w32 file.
+     *
+     * @return bool
+     */
+    public function compileConfigw32File()
+    {
+        $skeleton = file_get_contents('stubs/config.w32.stub');
+        $configw32 = "config.w32";
+
+        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
+
+        return file_put_contents($this->destDir . '/' . $configw32, $skeleton);
     }
 }
