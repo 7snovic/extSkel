@@ -1,10 +1,16 @@
 ## extSkel
 
 a Modern alternative way to generate PHP Extension skeleton.  
-Remember, it's just a skeleton generator, it will not write an entire PHP
-extension for you
+**Remember**, *it's just a skeleton generator, it will not write an entire PHP
+extension for you.*
 
 ### Installation :-
+
+```sh
+git clone git@github.com:7snovic/extSkel.git
+```
+
+or via composer
 
 ```sh
 comoposer install 7snovic/extSkel
@@ -66,3 +72,15 @@ this will create the required extension files :-
 - extension header file : php_helloWorld.h .
 - config.m4 file.
 - config.w32 file.
+
+---
+
+### TODO
+
+- Lint the output files.
+- Support objects and classes.
+- Support INI directives.
+- Support phpinfo handling.
+- Additional options.
+- Support Namespaces.
+- Release the `.phar` version.
