@@ -6,7 +6,7 @@ class extSkel
     /**
      * All the supported and available options with
      * it's description used @ printhelp method.
-     * 
+     *
      * @var array
      */
     public $availableOptions = [
@@ -32,7 +32,7 @@ class extSkel
 
     /**
      * Check the sapi that runs the script.
-     * 
+     *
      * @return bool
      *
      * @throws \Exception
@@ -48,7 +48,7 @@ class extSkel
 
     /**
      * Gets the options passed to php via command-line.
-     * 
+     *
      * @return array
      */
     public function getOptions()
@@ -58,7 +58,7 @@ class extSkel
 
     /**
      * Analyzing each option and assign it for a method to perform any required action.
-     * 
+     *
      * @return void
      */
     public function analyzeOptions($options)
@@ -85,7 +85,7 @@ class extSkel
 
     /**
      * call the compile function.
-     * 
+     *
      * @return string|\hassan\extSkel\AnalyzerInterface
      */
 	public function run($options)
@@ -93,16 +93,16 @@ class extSkel
         if (key_exists('help', $options) or count($options) == 0) {
             $this->printHelp();
         } else {
-            $this->analyzeOptions($options);
             $options['extension'] = isset($options['extension']) ? $options['extension'] : 'extSkel';
             $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
+            $this->analyzeOptions($options);
             return $this->analyzer->compile($options);
         }
 	}
 
     /**
      * a Helper method to print a help message to the stdout.
-     * 
+     *
      * @return string
      */
     public function printHelp()

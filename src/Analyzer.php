@@ -170,13 +170,17 @@ class Analyzer implements AnalyzerInterface
     public function analyzeDestDir($directory, $options)
     {
         if (!is_dir($directory)) {
-            throw new \Exception('Destination directory does not exists.');
+            throw new \Exception("Destination directory does not exists.\n");
         }
-        if (is_dir($directory . $options['extenstion'])) {
-            throw new \Exception('The extension name is allready exists.');
+        if (is_dir($directory . $options['extension'])) {
+            throw new \Exception("The extension name is allready exists.\n");
         }
 
-        $this->option['dest-dir'] = $directory;
+        $directory = rtrim($options['dest-dir'], '/');
+
+        mkdir($extensionPath = $directory . '/' . $options['extension'], 0755);
+
+        $this->destDir = $this->option['dest-dir'] = $extensionPath;
     }
 
     /**
@@ -199,8 +203,7 @@ class Analyzer implements AnalyzerInterface
             $this->headerStub = str_ireplace('%credits%', str_pad("extSkel", 60), $this->headerStub);
         }
 
-        $this->destDir = $options['dest-dir'];
-
+        // $this->destDir = $options['dest-dir'];
         if (
             !$this->compileExtension($options) or
             !$this->compileHeaderFile() or
@@ -229,10 +232,11 @@ class Analyzer implements AnalyzerInterface
         } else {
             $skeleton = str_ireplace('%header%', '', $skeleton);
         }
+        // print_r($options);exit;
 
-        if (isset($this->options['dest-dir'])) {
-            $destDir = $this->options['dest-dir'];
-        }
+        /*if (isset($this->options['dest-dir'])) {
+            $this->destDir = $this->options['dest-dir'];
+        }*/
 
         $argInfoStub = $functionsStub = '';
         if (isset($this->functions)) {
@@ -255,7 +259,6 @@ class Analyzer implements AnalyzerInterface
         $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
         $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
         $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
-
         return file_put_contents($this->destDir . '/' . $this->extensionName . '.c', trim($skeleton));
     }
 
