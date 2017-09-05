@@ -10,19 +10,17 @@ class extSkel
      * @var array
      */
     public $availableOptions = [
-        'proto:' => '--proto=file              File contains prototypes of functions to create',
+        'proto:' => '--proto=file              File contains prototypes of functions to create.',
 
-        'extension::' => '--extension=extname       Module is the name of your extension',
-        'dest-dir::' => '--dest-dir=path           Path to the extension directory',
-        'credits::' => '--credits=author          Credits string to be added to headers',
-        // 'credits-file::'
-        // 'verbose::',
-        // 'config.m4::',
-        // 'use-namespace::'
-
-        'help' => '--help                    This message',
-        'dump-header' => '--dump-header             Append header string to your extension',
-        'fast-zpp' => '--fast-zpp                Use FastZPP API instead of zpp functions',
+        'extension::' => '--extension=extname       Module is the name of your extension.',
+        'dest-dir::' => '--dest-dir=path           Path to the extension directory.',
+        'credits::' => '--credits=author          Credits string to be added to headers.',
+        'php-arg::' => '--php-arg=enable          If your extension references something external, use with'
+        . PHP_EOL . '                            Otherwise use enable.',
+        
+        'help' => '--help                    This message.',
+        'dump-header' => '--dump-header             Append header string to your extension.',
+        'fast-zpp' => '--fast-zpp                Use FastZPP API instead of zpp functions.',
     ];
 
     public function __construct(AnalyzerInterface $analyzer)

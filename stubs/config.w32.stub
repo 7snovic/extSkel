@@ -1,4 +1,4 @@
-ARG_ENABLE('%EXTNAME%', '%EXTNAME% support', 'no');
+ARG_%PHPARGCAPS%('%EXTNAME%', '%EXTNAME% support', 'no');
 
 if (PHP_%EXTNAMECAPS% != 'no') {
 	AC_DEFINE('HAVE_%EXTNAMECAPS%', 1, '%EXTNAME% support enabled');
