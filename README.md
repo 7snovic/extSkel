@@ -1,6 +1,6 @@
 ## extSkel
 
-a Modern alternative way to generate PHP Extension skeleton.  
+a modern alternative way to generate PHP Extension skeleton.  
 **Remember**, *it's just a skeleton generator, it will not write an entire PHP
 extension for you.*
 
@@ -20,15 +20,17 @@ comoposer install 7snovic/extSkel
 
 ```sh
 php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]
-            [--credits="author name"] [--dump-header] [--fast-zpp]
+            [--credits="author name"] [--dump-header] [--fast-zpp] [--php-arg="with|enable"]
 
-  --proto=file              File contains prototypes of functions to create
-  --extension=extname       Module is the name of your extension
-  --dest-dir=path           Path to the extension directory
-  --credits=author          Credits string to be added to headers
-  --help                    This message
-  --dump-header             Append header string to your extension
-  --fast-zpp                Use FastZPP API instead of zpp functions
+  --proto=file              File contains prototypes of functions to create.
+  --extension=extname       Module is the name of your extension.
+  --dest-dir=path           Path to the extension directory.
+  --credits=author          Credits string to be added to headers.
+  --php-arg=enable          If your extension references something external, use with
+                            Otherwise use enable.
+  --help                    This message.
+  --dump-header             Append header string to your extension.
+  --fast-zpp                Use FastZPP API instead of zpp functions.
 ```
 
 ---

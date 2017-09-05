@@ -17,7 +17,7 @@ class extSkel
         'credits::' => '--credits=author          Credits string to be added to headers.',
         'php-arg::' => '--php-arg=enable          If your extension references something external, use with'
         . PHP_EOL . '                            Otherwise use enable.',
-        
+
         'help' => '--help                    This message.',
         'dump-header' => '--dump-header             Append header string to your extension.',
         'fast-zpp' => '--fast-zpp                Use FastZPP API instead of zpp functions.',
@@ -108,7 +108,7 @@ class extSkel
         $help = [];
 
         $help[] = 'php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]';
-        $help[] = '            [--credits="author name"] [--dump-header] [--fast-zpp]';
+        $help[] = '            [--credits="author name"] [--dump-header] [--fast-zpp] [--php-arg="with|enable"]';
         $help[] = '';
         foreach ($this->availableOptions as $key => $option) {
             $help[] = '  ' . $option;
