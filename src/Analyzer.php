@@ -278,6 +278,7 @@ class Analyzer implements AnalyzerInterface
         $skeleton = file_get_contents('stubs/php_skeleton.stub');
         $phpHeader = "php_{$this->extensionName}.h";
 
+        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
         $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
 
         if (isset($this->options['dump-header'])) {
@@ -303,6 +304,7 @@ class Analyzer implements AnalyzerInterface
         $phpArg = $this->options['php-arg'];
 
         $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
+        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
 
         $skeleton = str_ireplace('%PHPARGCAPS%', strtoupper($phpArg), $skeleton);
         $skeleton = str_ireplace('%PHPARG%', $phpArg, $skeleton);
@@ -329,6 +331,7 @@ class Analyzer implements AnalyzerInterface
         $configw32 = "config.w32";
 
         $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
+        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
 
         $skeleton = str_ireplace('%PHPARGCAPS%', strtoupper($this->options['php-arg']), $skeleton);
 

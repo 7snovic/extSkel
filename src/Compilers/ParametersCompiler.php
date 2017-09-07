@@ -103,17 +103,22 @@ class ParametersCompiler
 
         $parameters = [];
         $isRequired = 0;
-        foreach ($this->function['parameters'] as $key => $parameter) {
-            $parameterTemplate = [];
+        if ($this->function['parametersCount'] == 0) {
+            $parameters = 'ZEND_PARSE_PARAMETERS_NONE();';
+            return $parameters;
+        } else {
+            foreach ($this->function['parameters'] as $key => $parameter) {
+                $parameterTemplate = [];
 
-            if (!$parameter['isRequired'] && !$isRequired) {
-                $parameterTemplate[] = 'Z_PARAM_OPTIONAL';
-                $isRequired = 1;
+                if (!$parameter['isRequired'] && !$isRequired) {
+                    $parameterTemplate[] = 'Z_PARAM_OPTIONAL';
+                    $isRequired = 1;
+                }
+
+                $parameterTemplate[] = $this->getFastZPP($parameter['type'], $parameter['name']);
+
+                $parameters[$key] = implode(PHP_EOL, $parameterTemplate);
             }
-
-            $parameterTemplate[] = $this->getFastZPP($parameter['type'], $parameter['name']);
-
-            $parameters[$key] = implode(PHP_EOL, $parameterTemplate);
         }
 
         $stub = preg_replace('#\%PARAMETERS\%#', implode(PHP_EOL, $parameters), $stub);
@@ -151,25 +156,34 @@ class ParametersCompiler
         $parametersList = [];
         $placeHolders = [];
         $isRequired = 0;
-        foreach ($this->function['parameters'] as $key => $parameter) {
-            $placeHoldersString = [];
-            $parametersListString = [];
+        if ($this->function['parametersCount'] == 0) {
+            $stub = str_replace(
+                'zend_parse_parameters(ZEND_NUM_ARGS(), "%PLACE_HOLDERS%", %PARAMETERS%)',
+                'zend_parse_parameters_none()',
+                $stub
+            );
+            return $stub;
+        } else {
+            foreach ($this->function['parameters'] as $key => $parameter) {
+                $placeHoldersString = [];
+                $parametersListString = [];
 
-            if (!$parameter['isRequired'] && !$isRequired) {
-                $placeHoldersString[] = '|';
-                $isRequired = 1;
+                if (!$parameter['isRequired'] && !$isRequired) {
+                    $placeHoldersString[] = '|';
+                    $isRequired = 1;
+                }
+
+                $placeHoldersString[] = $this->getZPP($parameter['type']);
+
+                $parametersListString[] = "&{$parameter['name']}_var";
+
+                if ($parameter['type'] == 'string') {
+                    $parametersListString[] = "&{$parameter['name']}_var_len";
+                }
+
+                $placeHolders[$key] = implode('', $placeHoldersString);
+                $parametersList[$key] = implode(', ', $parametersListString);
             }
-
-            $placeHoldersString[] = $this->getZPP($parameter['type']);
-
-            $parametersListString[] = "&{$parameter['name']}_var";
-
-            if ($parameter['type'] == 'string') {
-                $parametersListString[] = "&{$parameter['name']}_var_len";
-            }
-
-            $placeHolders[$key] = implode('', $placeHoldersString);
-            $parametersList[$key] = implode(', ', $parametersListString);
         }
 
         $stub = preg_replace('#\%PLACE_HOLDERS\%#', implode('', $placeHolders), $stub);

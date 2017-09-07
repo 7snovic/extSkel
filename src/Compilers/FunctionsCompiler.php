@@ -70,12 +70,9 @@ class FunctionsCompiler
     {
         $stub = file_get_contents('stubs/functions.stub');
 
-        $parametersStub = '';
-        if ($function['parametersCount'] > 0) {
-            $paramtersCompiler = new ParametersCompiler($function, $this->extension, $this->parametersApi);
+        $paramtersCompiler = new ParametersCompiler($function, $this->extension, $this->parametersApi);
 
-            $parametersStub = $paramtersCompiler->compile();
-        }
+        $parametersStub = $paramtersCompiler->compile();
 
         $stub = preg_replace('#\%PARAMETERS_STUB\%#', $parametersStub, $stub);
         $stub = preg_replace('#\%EXTNAME\%#', $this->extension, $stub);
