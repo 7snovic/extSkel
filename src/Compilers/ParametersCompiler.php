@@ -88,7 +88,6 @@ class ParametersCompiler
                 $fastZpp = "Z_PARAM_ZVAL({$varName}_var)";
             }
         }
-
         return $fastZpp;
     }
 
@@ -118,10 +117,13 @@ class ParametersCompiler
                 $parameterTemplate[] = $this->getFastZPP($parameter['type'], $parameter['name']);
 
                 $parameters[$key] = implode(PHP_EOL, $parameterTemplate);
+
+                $parametersList[$key] = $this->getVariablesList($parameter['type'], $parameter['name']);
             }
         }
 
         $stub = str_ireplace('%PARAMETERS%', implode(PHP_EOL, $parameters), $stub);
+        $stub = str_ireplace('%PARAMSLIST%', implode(PHP_EOL, $parametersList), $stub);
         $stub = str_ireplace('%ALL_PARAMETERS%', $this->function['parametersCount'], $stub);
         $stub = str_ireplace('%REQUIRED_PARAMETERS%', $this->function['requiredParametersCount'], $stub);
         return $stub;
@@ -162,11 +164,12 @@ class ParametersCompiler
                 'zend_parse_parameters_none()',
                 $stub
             );
+            $stub = str_ireplace('%PARAMSLIST%', '', $stub);
             return $stub;
         } else {
             foreach ($this->function['parameters'] as $key => $parameter) {
                 $placeHoldersString = [];
-                $parametersListString = [];
+                $parametersString = [];
 
                 if (!$parameter['isRequired'] && !$isRequired) {
                     $placeHoldersString[] = '|';
@@ -175,20 +178,61 @@ class ParametersCompiler
 
                 $placeHoldersString[] = $this->getZPP($parameter['type']);
 
-                $parametersListString[] = "&{$parameter['name']}_var";
+                $parametersString[] = "&{$parameter['name']}_var";
 
                 if ($parameter['type'] == 'string') {
-                    $parametersListString[] = "&{$parameter['name']}_var_len";
+                    $parametersString[] = "&{$parameter['name']}_var_len";
                 }
 
                 $placeHolders[$key] = implode('', $placeHoldersString);
-                $parametersList[$key] = implode(', ', $parametersListString);
+                $parameters[$key] = implode(', ', $parametersString);
+
+                $parametersList[$key] = $this->getVariablesList($parameter['type'], $parameter['name']);
             }
         }
 
         $stub = str_ireplace('%PLACE_HOLDERS%', implode('', $placeHolders), $stub);
-        $stub = str_ireplace('%PARAMETERS%', implode(', ', $parametersList), $stub);
+        $stub = str_ireplace('%PARAMETERS%', implode(', ', $parameters), $stub);
+        $stub = str_ireplace('%PARAMSLIST%', implode(PHP_EOL, $parametersList), $stub);
         return $stub;
+    }
+
+    /**
+     * Generate a list of variables from the given parameters.
+     * 
+     * @param string $type
+     * @param string $varName
+     * 
+     * @return string
+     */
+    private function getVariablesList($type, $varName)
+    {
+        switch ($type) {
+            case 'string': {
+                $variable = "char *{$varName}_var;" . PHP_EOL . "size_t {$varName}_var_len;";
+            }
+            break;
+            case 'int': {
+                $variable = "zend_long {$varName}_var;";
+            }
+            break;
+            case 'float': {
+                $variable = "double {$varName}_var";
+            }
+            break;
+            case 'bool': {
+                $variable = "zend_bool {$varName}_var;";
+            }
+            break;
+            case 'mixed': {
+                $variable = "zval *{$varName}_var;";
+            }
+            break;
+            default: {
+                $variable = "zval *{$varName}_var;";
+            }
+        }
+        return $variable;
     }
 
     /**
