@@ -57,7 +57,7 @@ class FunctionsCompiler
 
         return [
             'functions' => implode(PHP_EOL, $output),
-            'functions_entry' => preg_replace('#\%FUNCTIONS_ENTRIES\%#', implode(PHP_EOL, $functionEntries), $functionEntriesStub)
+            'functions_entry' => str_ireplace('%FUNCTIONS_ENTRIES%', implode(PHP_EOL, $functionEntries), $functionEntriesStub)
         ];
     }
 
@@ -74,9 +74,9 @@ class FunctionsCompiler
 
         $parametersStub = $paramtersCompiler->compile();
 
-        $stub = preg_replace('#\%PARAMETERS_STUB\%#', $parametersStub, $stub);
-        $stub = preg_replace('#\%EXTNAME\%#', $this->extension, $stub);
-        $stub = preg_replace('#\%FUNCNAME\%#', $function['name'], $stub);
+        $stub = str_ireplace('%PARAMETERS_STUB%', $parametersStub, $stub);
+        $stub = str_ireplace('%EXTNAME%', $this->extension, $stub);
+        $stub = str_ireplace('%FUNCNAME%', $function['name'], $stub);
 
         return $stub;
     }

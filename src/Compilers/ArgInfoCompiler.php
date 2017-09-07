@@ -62,9 +62,9 @@ class ArgInfoCompiler
             }
         }
 
-        $stub = preg_replace('#\%ARGINFO\%#', implode(PHP_EOL, $argInfoStub), $stub);
-        $stub = preg_replace('#\%EXTNAME\%#', $this->extension, $stub);
-        $stub = preg_replace('#\%FUNCNAME\%#', $function['name'], $stub);
+        $stub = str_ireplace('%ARGINFO%', implode(PHP_EOL, $argInfoStub), $stub);
+        $stub = str_ireplace('%EXTNAME%', $this->extension, $stub);
+        $stub = str_ireplace('%FUNCNAME%', $function['name'], $stub);
 
         return $stub;
     }

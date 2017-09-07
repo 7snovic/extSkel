@@ -121,9 +121,9 @@ class ParametersCompiler
             }
         }
 
-        $stub = preg_replace('#\%PARAMETERS\%#', implode(PHP_EOL, $parameters), $stub);
-        $stub = preg_replace('#\%ALL_PARAMETERS\%#', $this->function['parametersCount'], $stub);
-        $stub = preg_replace('#\%REQUIRED_PARAMETERS\%#', $this->function['requiredParametersCount'], $stub);
+        $stub = str_ireplace('%PARAMETERS%', implode(PHP_EOL, $parameters), $stub);
+        $stub = str_ireplace('%ALL_PARAMETERS%', $this->function['parametersCount'], $stub);
+        $stub = str_ireplace('%REQUIRED_PARAMETERS%', $this->function['requiredParametersCount'], $stub);
         return $stub;
     }
 
@@ -186,8 +186,8 @@ class ParametersCompiler
             }
         }
 
-        $stub = preg_replace('#\%PLACE_HOLDERS\%#', implode('', $placeHolders), $stub);
-        $stub = preg_replace('#\%PARAMETERS\%#', implode(', ', $parametersList), $stub);
+        $stub = str_ireplace('%PLACE_HOLDERS%', implode('', $placeHolders), $stub);
+        $stub = str_ireplace('%PARAMETERS%', implode(', ', $parametersList), $stub);
         return $stub;
     }
 
