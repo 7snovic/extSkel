@@ -10,10 +10,10 @@ extension for you.*
 git clone git@github.com:7snovic/extSkel.git
 ```
 
-or via composer
+then dump the autoload files
 
 ```sh
-comoposer install 7snovic/extSkel
+comoposer dump-autoload
 ```
 
 ### Usage
