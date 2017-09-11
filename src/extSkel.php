@@ -23,6 +23,13 @@ class extSkel
         'fast-zpp' => '--fast-zpp                Use FastZPP API instead of zpp functions.',
     ];
 
+    /**
+     * Create a new extSkel instance.
+     *
+     * @param \AnalyzerInterface $analyzer
+     *
+     * @return void
+     */
     public function __construct(AnalyzerInterface $analyzer)
     {
         $this->analyzer = $analyzer;
@@ -57,6 +64,8 @@ class extSkel
     /**
      * Analyzing each option and assign it for a method to perform any required action.
      *
+     * @param array $options
+     *
      * @return void
      */
     public function analyzeOptions($options)
@@ -84,6 +93,8 @@ class extSkel
     /**
      * call the compile function.
      *
+     * @param array $options
+     *
      * @return string|\hassan\extSkel\AnalyzerInterface
      */
 	public function run($options)
@@ -93,7 +104,7 @@ class extSkel
         } elseif (key_exists('opt-file')) {
             $options = $this->parseOptFile($options['opt-file']);
         }
-        
+
         $options['extension'] = isset($options['extension']) ? $options['extension'] : 'extSkel';
         $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
         $this->analyzeOptions($options);
@@ -103,7 +114,7 @@ class extSkel
     /**
      * Decode the provided options json file.
      *
-     * @param string
+     * @param string $optFile
      *
      * @return array
      *
