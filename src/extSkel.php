@@ -63,7 +63,7 @@ class extSkel
     {
         foreach ($options as $key => $option) {
 
-            if ($key == 'help') {
+            if ($key == 'help' || $key == 'opt-file') {
                 continue;
             }
 
@@ -89,14 +89,40 @@ class extSkel
 	public function run($options)
 	{
         if (key_exists('help', $options) or count($options) == 0) {
-            $this->printHelp();
-        } else {
-            $options['extension'] = isset($options['extension']) ? $options['extension'] : 'extSkel';
-            $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
-            $this->analyzeOptions($options);
-            return $this->analyzer->compile($options);
+            return $this->printHelp();
+        } elseif (key_exists('opt-file')) {
+            $options = $this->parseOptFile($options['opt-file']);
         }
+        
+        $options['extension'] = isset($options['extension']) ? $options['extension'] : 'extSkel';
+        $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
+        $this->analyzeOptions($options);
+        return $this->analyzer->compile($options);
 	}
+
+    /**
+     * Decode the provided options json file.
+     *
+     * @param string
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function parseOptFile($optFile)
+    {
+        if (file_exists($optFile) == false) {
+            throw new \Exception("Opt file does not exsists.");
+        }
+
+        if (extension_loaded('json') == false) {
+            throw new \Exception("Json extension can not be loaded.");
+        }
+
+        return json_decode(
+            file_get_contents($optFile), true
+        );
+    }
 
     /**
      * a Helper method to print a help message to the stdout.
