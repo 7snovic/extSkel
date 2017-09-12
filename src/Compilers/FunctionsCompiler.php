@@ -1,37 +1,37 @@
 <?php
 namespace hassan\extSkel\Compilers;
 
-class FunctionsCompiler
+class FunctionsCompiler extends AbstractCompiler
 {
 
     /**
      * The extension name.
-     * 
+     *
      * @var string
      */
     private $extension;
 
     /**
      * The parameter api string.
-     * 
+     *
      * @var string
      */
     private $parametersApi;
 
     /**
      * The functions list.
-     * 
+     *
      * @var array
      */
     private $functions = [];
 
     /**
      * Create a new FunctionsCompiler instance.
-     * 
+     *
      * @param array $functions
      * @param string $extension
      * @param string $parametersApi
-     * 
+     *
      * @return void
      */
     public function __construct($functions, $extension, $parametersApi)
@@ -43,7 +43,7 @@ class FunctionsCompiler
 
     /**
      * Compiles the PHP_FUNCTION & functions entry stub.
-     * 
+     *
      * @return array
      */
     public function compile()
@@ -52,7 +52,7 @@ class FunctionsCompiler
         $output = [];
         foreach ($this->functions as $key => $function) {
             $output[$key] = $this->internalCompiler($function);
-            $functionEntries[$key] = "PHP_FE({$this->extension}_{$function['name']},		arginfo_{$this->extension}_{$function['name']})";
+            $functionEntries[$key] = self::TAB . "PHP_FE({$this->extension}_{$function['name']},		arginfo_{$this->extension}_{$function['name']})";
         }
 
         return [
@@ -63,7 +63,7 @@ class FunctionsCompiler
 
     /**
      * Compiles the PHP_FUNCTION stub.
-     * 
+     *
      * @return string
      */
     public function internalCompiler($function)

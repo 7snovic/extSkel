@@ -1,32 +1,32 @@
 <?php
 namespace hassan\extSkel\Compilers;
 
-class ParametersCompiler
+class ParametersCompiler extends AbstractCompiler
 {
     /**
      * The extension name.
-     * 
+     *
      * @var string
      */
     private $extension;
 
     /**
      * The parameter api string.
-     * 
+     *
      * @var string
      */
     private $parametersApi;
 
     /**
      * The function array.
-     * 
+     *
      * @var array
      */
     private $functions = [];
 
     /**
      * The current supported datatypes.
-     * 
+     *
      * @var array
      */
     private $supportedTypes = [
@@ -39,11 +39,11 @@ class ParametersCompiler
 
     /**
      * Create a new ParametersCompiler instance.
-     * 
+     *
      * @param array $function
      * @param string $extension
      * @param string $parametersApi
-     * 
+     *
      * @return void
      */
     public function __construct($function, $extension, $parametersApi)
@@ -55,10 +55,10 @@ class ParametersCompiler
 
     /**
      * Get the proper FastZPP Macro.
-     * 
+     *
      * @param string $type
      * @param string $varName
-     * 
+     *
      * @return string
      */
     private function getFastZPP($type, $varName)
@@ -88,12 +88,12 @@ class ParametersCompiler
                 $fastZpp = "Z_PARAM_ZVAL({$varName}_var)";
             }
         }
-        return $fastZpp;
+        return self::TAB . $fastZpp;
     }
 
     /**
      * Compile the FastZpp API.
-     * 
+     *
      * @return string
      */
     public function compileFastZPP()
@@ -103,26 +103,26 @@ class ParametersCompiler
         $parameters = [];
         $isRequired = 0;
         if ($this->function['parametersCount'] == 0) {
-            $parameters = 'ZEND_PARSE_PARAMETERS_NONE();';
+            $parameters = self::TAB . 'ZEND_PARSE_PARAMETERS_NONE();';
             return $parameters;
         } else {
             foreach ($this->function['parameters'] as $key => $parameter) {
                 $parameterTemplate = [];
 
                 if (!$parameter['isRequired'] && !$isRequired) {
-                    $parameterTemplate[] = 'Z_PARAM_OPTIONAL';
+                    $parameterTemplate[] = self::TAB . 'Z_PARAM_OPTIONAL';
                     $isRequired = 1;
                 }
 
                 $parameterTemplate[] = $this->getFastZPP($parameter['type'], $parameter['name']);
 
-                $parameters[$key] = implode(PHP_EOL, $parameterTemplate);
+                $parameters[$key] = implode(PHP_EOL . self::TAB, $parameterTemplate);
 
                 $parametersList[$key] = $this->getVariablesList($parameter['type'], $parameter['name']);
             }
         }
 
-        $stub = str_ireplace('%PARAMETERS%', implode(PHP_EOL, $parameters), $stub);
+        $stub = str_ireplace('%PARAMETERS%', implode(PHP_EOL . self::TAB, $parameters), $stub);
         $stub = str_ireplace('%PARAMSLIST%', implode(PHP_EOL, $parametersList), $stub);
         $stub = str_ireplace('%ALL_PARAMETERS%', $this->function['parametersCount'], $stub);
         $stub = str_ireplace('%REQUIRED_PARAMETERS%', $this->function['requiredParametersCount'], $stub);
@@ -131,10 +131,10 @@ class ParametersCompiler
 
     /**
      * Get the zpp placeholder.
-     * 
+     *
      * @param string $type
      * @param string $varName
-     * 
+     *
      * @return string
      */
     public function getZPP($type)
@@ -148,7 +148,7 @@ class ParametersCompiler
 
     /**
      * Compile the zpp functions.
-     * 
+     *
      * @return string
      */
     public function compileZPP()
@@ -199,17 +199,18 @@ class ParametersCompiler
 
     /**
      * Generate a list of variables from the given parameters.
-     * 
+     *
      * @param string $type
      * @param string $varName
-     * 
+     *
      * @return string
      */
     private function getVariablesList($type, $varName)
     {
         switch ($type) {
             case 'string': {
-                $variable = "char *{$varName}_var;" . PHP_EOL . "size_t {$varName}_var_len;";
+                $variable = "char *{$varName}_var;" . PHP_EOL;
+                $variable .= self::TAB . "size_t {$varName}_var_len;";
             }
             break;
             case 'int': {
@@ -232,12 +233,12 @@ class ParametersCompiler
                 $variable = "zval *{$varName}_var;";
             }
         }
-        return $variable;
+        return self::TAB . $variable;
     }
 
     /**
      * Compile the parameters based on the self::$parametersApi.
-     * 
+     *
      * @return string
      */
     public function compile()

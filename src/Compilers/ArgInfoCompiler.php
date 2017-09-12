@@ -1,28 +1,28 @@
 <?php
 namespace hassan\extSkel\Compilers;
 
-class ArgInfoCompiler
+class ArgInfoCompiler extends AbstractCompiler
 {
     /**
      * The extension name.
-     * 
+     *
      * @var string
      */
     private $extension;
 
     /**
      * The functions list.
-     * 
+     *
      * @var array
      */
     private $functions = [];
 
     /**
      * Create a new ArginfoCompiler instance.
-     * 
+     *
      * @param array $functions
      * @param string $extension
-     * 
+     *
      * @return void
      */
     public function __construct($functions, $extension)
@@ -33,7 +33,7 @@ class ArgInfoCompiler
 
     /**
      * Compiles each function into an arginfo compilers.
-     * 
+     *
      * @return string
      */
     public function compile()
@@ -48,7 +48,7 @@ class ArgInfoCompiler
 
     /**
      * Compiles an array of functions into arg info macros.
-     * 
+     *
      * @return string
      */
     public function internalCompiler($function)
@@ -58,7 +58,7 @@ class ArgInfoCompiler
         $argInfoStub = [];
         if ($function['parametersCount'] > 0) {
             foreach ($function['parameters'] as $parameter) {
-                $argInfoStub[] = "ZEND_ARG_INFO(0, {$parameter['type']}_{$parameter['name']})";
+                $argInfoStub[] = self::TAB . "ZEND_ARG_INFO(0, {$parameter['type']}_{$parameter['name']})";
             }
         }
 

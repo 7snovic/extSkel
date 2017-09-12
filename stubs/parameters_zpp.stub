@@ -1,5 +1,5 @@
 %PARAMSLIST%
 
-if (zend_parse_parameters(ZEND_NUM_ARGS(), "%PLACE_HOLDERS%", %PARAMETERS%) == FAILURE) {
-    RETURN_FALSE;
-}
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "%PLACE_HOLDERS%", %PARAMETERS%) == FAILURE) {
+        RETURN_FALSE;
+    }
