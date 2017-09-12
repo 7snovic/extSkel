@@ -79,10 +79,12 @@ this will create the required extension files :-
 
 ### TODO
 
-- Lint the output files.
-- Support objects and classes.
-- Support INI directives.
-- Support phpinfo handling.
-- Additional options.
-- Support Namespaces.
-- Release the `.phar` version.
+- [x] Lint the output files.
+- [ ] Support objects and classes.
+- [ ] Support INI directives.
+- [ ] Support phpinfo handling.
+- [ ] Additional options.
+    - [x] PHP Arg [enable - with ]
+    - [x] Provide options as a JSON file instead of command-line options
+- [ ] Support Namespaces.
+- [ ] Release the `.phar` version.
