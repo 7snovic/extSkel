@@ -101,7 +101,7 @@ class extSkel
 	{
         if (key_exists('help', $options) or count($options) == 0) {
             return $this->printHelp();
-        } elseif (key_exists('opt-file')) {
+        } elseif (key_exists('opt-file', $options)) {
             $options = $this->parseOptFile($options['opt-file']);
         }
 
@@ -127,7 +127,9 @@ class extSkel
         }
 
         if (extension_loaded('json') == false) {
-            throw new \Exception("Json extension can not be loaded.");
+            throw new \Exception(
+                "Json extension not found, you may use command-line options instead."
+            );
         }
 
         return json_decode(
