@@ -31,6 +31,7 @@ php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]
   --help                    This message.
   --dump-header             Append header string to your extension.
   --fast-zpp                Use FastZPP API instead of zpp functions.
+  --opt-file=path           Use an options file instead of command-line args.
 ```
 
 ---
@@ -55,6 +56,35 @@ the available types :-
 - float
 - int
 - if empty the parameter will compiled as zval
+
+---
+
+### Opt-file
+
+now you can provide a JSON file as an options file instead of using the command-line options.
+
+
+you may set your opt-file as follows:
+```json
+{
+    "proto": "/path/to/proto/file",
+    "extension": "extname",
+    "credits": "author name",
+    "php-arg": "enable|with",
+    "dump-header": true,
+    "fast-zpp": true
+}
+```
+
+and pass this opt-file to `extSkel` using the `--opt-file` option.
+
+for example:
+
+```bash
+php extSkel --opt-file='opts.json'
+```
+
+Note: this option will disable the command-line options entirely.
 
 ---
 
