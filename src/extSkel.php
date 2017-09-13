@@ -21,6 +21,7 @@ class extSkel
         'help' => '--help                    This message.',
         'dump-header' => '--dump-header             Append header string to your extension.',
         'fast-zpp' => '--fast-zpp                Use FastZPP API instead of zpp functions.',
+        'opt-file' => '--opt-file                Use an options file instead of command-line args.',
     ];
 
     /**
