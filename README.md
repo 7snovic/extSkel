@@ -29,7 +29,7 @@ php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]
   --php-arg=enable          If your extension references something external, use with
                             Otherwise use enable.
   --help                    This message.
-  --dump-header             Append header string to your extension.
+  --no-header               Dont Append header string to your extension.
   --fast-zpp                Use FastZPP API instead of zpp functions.
   --opt-file=path           Use an options file instead of command-line args.
 ```
