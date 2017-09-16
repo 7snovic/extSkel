@@ -19,7 +19,7 @@ class extSkel
         . PHP_EOL . '                            Otherwise use enable.',
 
         'help' => '--help                    This message.',
-        'dump-header' => '--dump-header             Append header string to your extension.',
+        'no-header' => '--no-header             Don\' append header string to your extension.',
         'fast-zpp' => '--fast-zpp                Use FastZPP API instead of zpp functions.',
         'opt-file' => '--opt-file                Use an options file instead of command-line args.',
     ];
@@ -148,7 +148,7 @@ class extSkel
         $help = [];
 
         $help[] = 'php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]';
-        $help[] = '            [--credits="author name"] [--dump-header] [--fast-zpp] [--php-arg="with|enable"]';
+        $help[] = '            [--credits="author name"] [--no-header] [--fast-zpp] [--php-arg="with|enable"]';
         $help[] = '';
         foreach ($this->availableOptions as $key => $option) {
             $help[] = '  ' . $option;

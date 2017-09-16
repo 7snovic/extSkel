@@ -137,13 +137,13 @@ class Analyzer implements AnalyzerInterface
 	}
 
     /**
-     * Analyze the dump-header option.
+     * Analyze the no-header option.
      *
      * @return void
      */
-    public function analyzeDumpheader()
+    public function analyzeNoheader()
     {
-        $this->options['dump-header'] = true;
+        $this->options['no-header'] = true;
     }
 
     /**
@@ -238,7 +238,7 @@ class Analyzer implements AnalyzerInterface
     {
         $skeleton = file_get_contents('stubs/skeleton.stub');
 
-        if (isset($options['dump-header'])) {
+        if (!isset($options['no-header'])) {
             $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
         } else {
             $skeleton = str_ireplace('%header%', '', $skeleton);
@@ -281,7 +281,7 @@ class Analyzer implements AnalyzerInterface
         $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
         $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
 
-        if (isset($this->options['dump-header'])) {
+        if (!isset($this->options['no-header'])) {
             $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
         } else {
             $skeleton = str_ireplace('%header%', '', $skeleton);
