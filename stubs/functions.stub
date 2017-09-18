@@ -2,14 +2,8 @@
  */
 PHP_FUNCTION(%EXTNAME%_%FUNCNAME%)
 {
-	char *var = "World";
-	size_t var_len = sizeof("World") - 1;
-	zend_string *retval;
 
 %PARAMETERS_STUB%
 
-	retval = strpprintf(0, "Hello %s", var);
-
-	RETURN_STR(retval);
 }
 /* }}}*/
