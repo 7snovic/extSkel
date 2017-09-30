@@ -1,18 +1,22 @@
 <?php
-
 namespace extSkel\Extension;
 
-function printHello() : string
+class hello
 {
-    return "Hello";
-}
+    public $namespace = 'namespace';
 
-function printParameter(string $paramter)
-{
+    public function printHello() : string
+    {
+        return "Hello";
+    }
 
-}
+    public function printParameter(string $paramter)
+    {
 
-function printWithOptional(string $x, $paramter = null, $y = 'bb')
-{
+    }
 
+    public function printWithOptional(string $x, $paramter = null, $y = 'bb')
+    {
+
+    }
 }
