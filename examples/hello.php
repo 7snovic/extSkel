@@ -1,6 +1,6 @@
 <?php
 
-namespace hassan\extSkel\Extension;
+namespace extSkel\Extension;
 
 function printHello() : string
 {

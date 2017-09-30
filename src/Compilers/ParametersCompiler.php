@@ -1,5 +1,5 @@
 <?php
-namespace hassan\extSkel\Compilers;
+namespace extSkel\Compilers;
 
 class ParametersCompiler extends AbstractCompiler
 {

@@ -1,8 +1,8 @@
 <?php
-namespace hassan\extSkel;
+namespace extSkel;
 
-use hassan\extSkel\Compilers\ArgInfoCompiler;
-use hassan\extSkel\Compilers\FunctionsCompiler;
+use extSkel\Compilers\ArgInfoCompiler;
+use extSkel\Compilers\FunctionsCompiler;
 
 class Analyzer implements AnalyzerInterface
 {
@@ -49,7 +49,7 @@ class Analyzer implements AnalyzerInterface
      *
      * @var string
      */
-    protected $namespace = 'hassan\extSkel\Extension';
+    protected $namespace = 'extSkel\Extension';
 
     /**
      * Analyze proto file and return a detailed array holding each function

@@ -1,5 +1,5 @@
 <?php
-namespace hassan\extSkel;
+namespace extSkel;
 
 class extSkel
 {

@@ -1,5 +1,5 @@
 <?php
-namespace hassan\extSkel\Compilers;
+namespace extSkel\Compilers;
 
 class ArgInfoCompiler extends AbstractCompiler
 {

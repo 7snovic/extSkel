@@ -1,5 +1,5 @@
 <?php
-namespace hassan\extSkel\Exception;
+namespace extSkel\Exception;
 
 class InvalidArgumentsException extends Exception
 {
