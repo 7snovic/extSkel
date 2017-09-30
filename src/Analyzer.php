@@ -293,6 +293,7 @@ class Analyzer implements AnalyzerInterface
         }
 
         $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
+        $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
 
         return file_put_contents($this->destDir . '/' . $phpHeader, $skeleton);
     }
