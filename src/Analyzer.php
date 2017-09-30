@@ -102,7 +102,16 @@ class Analyzer implements AnalyzerInterface
      */
 	private function getFunctions()
 	{
-		return $this->definedFunctions = get_defined_functions()['user'];
+        $classInfo = [];
+        foreach (get_declared_classes() as $className) {
+            $class = new \ReflectionClass($className);
+            if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
+                $classInfo['class'] = $class->getName();
+                $classInfo['namespace'] = $class->getProperty('namespace')->getName();
+                $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+            }
+        }
+        return $classInfo;
 	}
 
     /**
@@ -114,14 +123,11 @@ class Analyzer implements AnalyzerInterface
      */
 	private function filterFunctions($definedFunctions)
 	{
-		foreach ($definedFunctions as $key => $function) {
-			$functionReflection = new \ReflectionFunction($function);
-			if (strstr($functionReflection->getNamespaceName(), $this->namespace) === false) {
-				continue;
-			}
+		foreach ($definedFunctions['methods'] as $key => $function) {
+			$functionReflection = new \ReflectionMethod($function->class, $function->name);
             if ($functionReflection->isUserDefined()) {
                 $this->functions[$key]['name'] = $functionReflection->getShortName();
-    			$this->functions[$key]['namespace'] = $functionReflection->getNamespaceName();
+    			$this->functions[$key]['namespace'] = $definedFunctions['namespace'];
     			$this->functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
     			$this->functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
                 $this->parameters = [];
@@ -133,7 +139,6 @@ class Analyzer implements AnalyzerInterface
                 $this->functions[$key]['parameters'] = $this->parameters;
             }
 		}
-
 	}
 
     /**
