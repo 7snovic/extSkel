@@ -124,6 +124,11 @@ class Analyzer implements AnalyzerInterface
 	private function filterFunctions($definedFunctions)
 	{
 		foreach ($definedFunctions['methods'] as $key => $function) {
+
+            if (in_array($function->name, get_defined_functions()['internal'])) {
+                throw new \Exception("Illegal function name\n");
+            }
+
 			$functionReflection = new \ReflectionMethod($function->class, $function->name);
             if ($functionReflection->isUserDefined()) {
                 $this->functions[$key]['name'] = $functionReflection->getShortName();
