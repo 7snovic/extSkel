@@ -22,6 +22,26 @@ PHP_RINIT_FUNCTION(%EXTNAME%)
 }
 /* }}} */
 
+/* {{{ PHP_MINIT_FUNCTION
+ */
+PHP_MINIT_FUNCTION(%EXTNAME%)
+{
+	%REGISTER_INI_ENTRIES%
+
+	return SUCCESS;
+}
+/* }}} */
+
+/* {{{ PHP_MSHUTDOWN_FUNCTION
+ */
+PHP_MSHUTDOWN_FUNCTION(%EXTNAME%)
+{
+	%UNREGISTER_INI_ENTRIES%
+
+	return SUCCESS;
+}
+/* }}} */
+
 /* {{{ PHP_MINFO_FUNCTION
  */
 PHP_MINFO_FUNCTION(%EXTNAME%)
@@ -29,6 +49,7 @@ PHP_MINFO_FUNCTION(%EXTNAME%)
 	php_info_print_table_start();
 	php_info_print_table_header(2, "%EXTNAME% support", "enabled");
 	php_info_print_table_end();
+    %DISPLAY_INI_ENTRIES%
 }
 /* }}} */
 
@@ -46,13 +67,13 @@ PHP_MINFO_FUNCTION(%EXTNAME%)
  */
 zend_module_entry %EXTNAME%_module_entry = {
 	STANDARD_MODULE_HEADER,
-	"%EXTNAME%",					/* Extension name */
-	%EXTNAME%_functions,			/* zend_function_entry */
-	NULL,							/* PHP_MINIT - Module initialization */
-	NULL,							/* PHP_MSHUTDOWN - Module shutdown */
-	PHP_RINIT(%EXTNAME%),			/* PHP_RINIT - Request initialization */
-	NULL,							/* PHP_RSHUTDOWN - Request shutdown */
-	PHP_MINFO(%EXTNAME%),			/* PHP_MINFO - Module info */
+	"%EXTNAME%",						/* Extension name */
+	%EXTNAME%_functions,				/* zend_function_entry */
+	PHP_MINIT_FUNCTION(%EXTNAME%),		/* PHP_MINIT - Module initialization */
+	PHP_MSHUTDOWN_FUNCTION(%EXTNAME%),	/* PHP_MSHUTDOWN - Module shutdown */
+	PHP_RINIT(%EXTNAME%),				/* PHP_RINIT - Request initialization */
+	NULL,								/* PHP_RSHUTDOWN - Request shutdown */
+	PHP_MINFO(%EXTNAME%),				/* PHP_MINFO - Module info */
 	PHP_%EXTNAMECAPS%_VERSION,		/* Version */
 	STANDARD_MODULE_PROPERTIES
 };
