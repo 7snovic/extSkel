@@ -53,6 +53,13 @@ class extSkel
 	protected $parameters = [];
 
     /**
+     * Variable that holds the skeleton stub string
+     *
+     * @var string
+     */
+    public $skeletonStub;
+
+    /**
      * Create a new extSkel instance.
      *
      * @param \AnalyzerInterface $analyzer
@@ -62,6 +69,24 @@ class extSkel
     public function __construct(AnalyzerInterface $analyzer)
     {
         $this->analyzer = $analyzer;
+
+        $this->skeletonStub = $this->loadSkeletonStub();
+    }
+
+    /**
+     * get the skeleton stub contents.
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
+    public function loadSkeletonStub()
+    {
+        if (file_exists('stubs/skeleton.stub')) {
+            return file_get_contents('stubs/skeleton.stub');
+        }
+
+        throw new \Exception('Can not load skeleton stub');
     }
 
     /**
