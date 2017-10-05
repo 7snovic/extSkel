@@ -43,14 +43,14 @@ class extSkel
      *
      * @var array
      */
-	protected $functions = [];
+    protected $functions = [];
 
     /**
      * The parameters array which holds the analyzed functions in proto file.
      *
      * @var array
      */
-	protected $parameters = [];
+    protected $parameters = [];
 
     /**
      * Variable that holds the skeleton stub string
@@ -96,14 +96,14 @@ class extSkel
      *
      * @throws \Exception
      */
-	public function checkSapi()
-	{
-		if (php_sapi_name() === 'cli') {
-			return true;
-		}
+    public function checkSapi()
+    {
+        if (php_sapi_name() === 'cli') {
+            return true;
+        }
 
-		throw new \Exception("This package only run under \"CLI\" sapi");
-	}
+        throw new \Exception("This package only run under \"CLI\" sapi");
+    }
 
     /**
      * Gets the options passed to php via command-line.
@@ -111,9 +111,9 @@ class extSkel
      * @return array
      */
     public function getOptions()
-	{
-		return getopt('', array_flip($this->availableOptions));
-	}
+    {
+        return getopt('', array_flip($this->availableOptions));
+    }
 
     /**
      * Analyzing each option and assign it for a method to perform any required action.
@@ -160,9 +160,21 @@ class extSkel
         try {
             $this->loadProtoFile($protoFile);
 
-            $definedFunctions = $this->getFunctions();
+            $classInfo = [];
+            foreach (get_declared_classes() as $className) {
+                $class = new \ReflectionClass($className);
+                if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
 
-            $this->filterFunctions($definedFunctions);
+                    $protoType = $class->getDefaultProperties()['protoType'];
+
+                    $classInfo['class'] = $class->getName();
+                    $classInfo['namespace'] = $class->getProperty('namespace')->getName();
+                    $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+                }
+            }
+            // return $classInfo;
+
+            $this->filterFunctions($classInfo);
         } catch (\Exception $e) {
             echo $e->getMessage();
             exit;
@@ -179,22 +191,22 @@ class extSkel
      * @throws \Exception
      */
     private function loadProtoFile($protoFile)
-	{
-		if (file_exists($protoFile)) {
-			require_once($protoFile);
+    {
+        if (file_exists($protoFile)) {
+            require_once($protoFile);
             return true;
-		}
+        }
 
-		throw new \Exception("please set a valid path to \"proto\" option\n");
-	}
+        throw new \Exception("please set a valid path to \"proto\" option\n");
+    }
 
     /**
      * Get all the user defined functions from the user space.
      *
      * @return array
      */
-	private function getFunctions()
-	{
+    private function getFunctions()
+    {
         $classInfo = [];
         foreach (get_declared_classes() as $className) {
             $class = new \ReflectionClass($className);
@@ -205,7 +217,7 @@ class extSkel
             }
         }
         return $classInfo;
-	}
+    }
 
     /**
      * Filter the defined functions and extract only the function under the self::$namespace.
@@ -214,20 +226,20 @@ class extSkel
      *
      * @return void
      */
-	private function filterFunctions($definedFunctions)
-	{
-		foreach ($definedFunctions['methods'] as $key => $function) {
+    private function filterFunctions($definedFunctions)
+    {
+        foreach ($definedFunctions['methods'] as $key => $function) {
 
             if (in_array($function->name, get_defined_functions()['internal'])) {
                 throw new \Exception("Illegal function name\n");
             }
 
-			$functionReflection = new \ReflectionMethod($function->class, $function->name);
+            $functionReflection = new \ReflectionMethod($function->class, $function->name);
             if ($functionReflection->isUserDefined()) {
                 $this->functions[$key]['name'] = $functionReflection->getShortName();
-    			$this->functions[$key]['namespace'] = $definedFunctions['namespace'];
-    			$this->functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
-    			$this->functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
+                $this->functions[$key]['namespace'] = $definedFunctions['namespace'];
+                $this->functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
+                $this->functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
                 $this->parameters = [];
                 foreach ($functionReflection->getParameters() as $paramterKey => $paramter) {
                     $this->parameters[$paramterKey]['name'] = $paramter->name;
@@ -236,8 +248,8 @@ class extSkel
                 }
                 $this->functions[$key]['parameters'] = $this->parameters;
             }
-		}
-	}
+        }
+    }
 
     /**
      * call the compile function.
@@ -246,8 +258,8 @@ class extSkel
      *
      * @return string|\hassan\extSkel\AnalyzerInterface
      */
-	public function run($options)
-	{
+    public function run($options)
+    {
         if (key_exists('help', $options) or count($options) == 0) {
             return $this->printHelp();
         } elseif (key_exists('opt-file', $options)) {
@@ -258,7 +270,7 @@ class extSkel
         $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
         $this->analyzeOptions($options);
         return $this->analyzer->compile($options, $this->functions, $this->parameters);
-	}
+    }
 
     /**
      * Decode the provided options json file.

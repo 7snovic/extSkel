@@ -5,6 +5,8 @@ class hello
 {
     public $namespace = 'namespace';
 
+    public $protoType = 'functions';
+
     public function printHello() : string
     {
         return "Hello";
