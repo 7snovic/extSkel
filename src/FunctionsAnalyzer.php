@@ -33,10 +33,15 @@ class FunctionsAnalyzer extends Analyzer
         return $this;
     }
 
-    /*
-    * {@inheritDoc}
-    *
-    */
+    /**
+     * Compile functions skeleton
+     *
+     * @param array $options
+     * @param array $classInfo
+     * @param string $skeleton
+     *
+     * @return string
+     */
     public function compileSkeleton($options, $classInfo, $skeleton)
     {
         $this->filterFunctions($classInfo);

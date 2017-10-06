@@ -42,6 +42,13 @@ class Analyzer implements AnalyzerInterface
     protected $parametersApi = 'zpp';
 
     /**
+     * Destination directory.
+     *
+     * @var string
+     */
+    public $destDir;
+
+    /**
      * Analyze the no-header option.
      *
      * @return void
@@ -89,8 +96,6 @@ class Analyzer implements AnalyzerInterface
 
         $this->destDir = $this->option['dest-dir'] = $extensionPath;
     }
-
-    public $destDir;
 
     /**
      * Analyze the php-arg option.
@@ -140,6 +145,8 @@ class Analyzer implements AnalyzerInterface
      * Compile the extension skeleton body.
      *
      * @param array $options
+     * @param array $classInfo
+     * @param string $protoType
      *
      * @return bool
      */
