@@ -4,9 +4,9 @@
 
 require_once "vendor/autoload.php";
 
-use extSkel\{extSkel,FunctionsAnalyzer};
+use extSkel\{extSkel,Analyzer};
 
-$skel = new extSkel(new FunctionsAnalyzer());
+$skel = new extSkel(new Analyzer());
 
 try {
     $skel->checkSapi();

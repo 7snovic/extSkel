@@ -131,7 +131,9 @@ class extSkel
             }
 
             if ($key == 'proto') {
-                $this->analyzeProto($option, $options);
+                // $this->analyzeProto($option, $options);
+                $this->protoFile = $option;
+                continue;
             }
 
             $key = str_replace('-', '', $key);
@@ -170,11 +172,15 @@ class extSkel
                     $classInfo['class'] = $class->getName();
                     $classInfo['namespace'] = $class->getProperty('namespace')->getName();
                     $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+
+                    $this->filterFunctions($classInfo);
+
+                    $this->analyzer->compile($options, $this->functions, $this->parameters);
                 }
             }
             // return $classInfo;
 
-            $this->filterFunctions($classInfo);
+
         } catch (\Exception $e) {
             echo $e->getMessage();
             exit;
@@ -269,7 +275,24 @@ class extSkel
         $options['extension'] = isset($options['extension']) ? $options['extension'] : 'extSkel';
         $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
         $this->analyzeOptions($options);
-        return $this->analyzer->compile($options, $this->functions, $this->parameters);
+        // $this->analyzeProto($this->protoFile, $options);
+        $this->loadProtoFile($options['proto']);
+
+        $classInfo = [];
+        foreach (get_declared_classes() as $className) {
+            $class = new \ReflectionClass($className);
+            if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
+
+                $protoType = $class->getDefaultProperties()['protoType'];
+
+                $classInfo['class'] = $class->getName();
+                $classInfo['namespace'] = $class->getProperty('namespace')->getName();
+                $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+
+                $this->analyzer->compile($options, $classInfo, $protoType);
+            }
+        }
+        return 1;
     }
 
     /**

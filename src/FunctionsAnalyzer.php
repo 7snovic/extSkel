@@ -6,19 +6,41 @@ use extSkel\Compilers\FunctionsCompiler;
 
 class FunctionsAnalyzer extends Analyzer
 {
+    private function filterFunctions($definedFunctions)
+    {
+        foreach ($definedFunctions['methods'] as $key => $function) {
+
+            if (in_array($function->name, get_defined_functions()['internal'])) {
+                throw new \Exception("Illegal function name\n");
+            }
+
+            $functionReflection = new \ReflectionMethod($function->class, $function->name);
+            if ($functionReflection->isUserDefined()) {
+                $this->functions[$key]['name'] = $functionReflection->getShortName();
+                $this->functions[$key]['namespace'] = $definedFunctions['namespace'];
+                $this->functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
+                $this->functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
+                $this->parameters = [];
+                foreach ($functionReflection->getParameters() as $paramterKey => $paramter) {
+                    $this->parameters[$paramterKey]['name'] = $paramter->name;
+                    $this->parameters[$paramterKey]['type'] = ($paramter->hasType() ? "{$paramter->getType()}" : null);
+                    $this->parameters[$paramterKey]['isRequired'] = $paramter->isOptional() ? 0 : 1;
+                }
+                $this->functions[$key]['parameters'] = $this->parameters;
+            }
+        }
+
+        return $this;
+    }
+
     /*
     * {@inheritDoc}
     *
     */
-    public function compileExtension($options)
+    public function compileSkeleton($options, $classInfo, $skeleton)
     {
-        $skeleton = file_get_contents('stubs/skeleton.stub');
-
-        if (!isset($options['no-header'])) {
-            $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
-        } else {
-            $skeleton = str_ireplace('%header%', '', $skeleton);
-        }
+        $this->filterFunctions($classInfo);
+        // $skeleton = file_get_contents('stubs/skeleton.stub');
 
         $argInfoStub = $functionsStub = '';
         if (isset($this->functions)) {
@@ -27,20 +49,19 @@ class FunctionsAnalyzer extends Analyzer
                 $this->parametersApi = 'fastzpp';
             }
 
-            $functionsCompiler = new FunctionsCompiler($this->functions, $this->extensionName, $this->parametersApi);
+            $functionsCompiler = new FunctionsCompiler($this->functions, $options['extension'], $this->parametersApi);
             $functionsStub = $functionsCompiler->compile();
 
-            $argInfoCompiler = new ArgInfoCompiler($this->functions, $this->extensionName);
+            $argInfoCompiler = new ArgInfoCompiler($this->functions, $options['extension']);
             $argInfoStub = $argInfoCompiler->compile();
         }
 
         $skeleton = str_ireplace('%arginfo_stub%', $argInfoStub, $skeleton);
         $skeleton = str_ireplace('%functions_stub%', $functionsStub['functions'], $skeleton);
         $skeleton = str_ireplace('%functions_entry_stub%', $functionsStub['functions_entry'], $skeleton);
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
+
         $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
-        $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
-        return file_put_contents($this->destDir . '/' . $this->extensionName . '.c', trim($skeleton));
+
+        return $skeleton;
     }
 }

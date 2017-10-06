@@ -75,7 +75,6 @@ class FunctionsCompiler extends AbstractCompiler
         $parametersStub = $paramtersCompiler->compile();
 
         $stub = str_ireplace('%PARAMETERS_STUB%', $parametersStub, $stub);
-        $stub = str_ireplace('%EXTNAME%', $this->extension, $stub);
         $stub = str_ireplace('%FUNCNAME%', $function['name'], $stub);
 
         return $stub;

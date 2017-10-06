@@ -1,7 +1,7 @@
 <?php
 namespace extSkel;
 
-abstract class Analyzer implements AnalyzerInterface
+class Analyzer implements AnalyzerInterface
 {
     /**
      * The user defined functions which will be in the proto file.
@@ -90,6 +90,8 @@ abstract class Analyzer implements AnalyzerInterface
         $this->destDir = $this->option['dest-dir'] = $extensionPath;
     }
 
+    public $destDir;
+
     /**
      * Analyze the php-arg option.
      *
@@ -107,10 +109,10 @@ abstract class Analyzer implements AnalyzerInterface
      *
      * @return bool
      */
-    public function compile($options, $functions, $parameters)
+    public function compile($options, $classInfo, $protoType)
     {
-        $this->functions = $functions;
-        $this->parameters = $parameters;
+        // $this->functions = $functions;
+        // $this->parameters = $parameters;
         $this->headerStub = file_get_contents('stubs/header.stub');
         $this->footerStub = file_get_contents('stubs/footer.stub');
 
@@ -123,7 +125,7 @@ abstract class Analyzer implements AnalyzerInterface
         }
 
         if (
-            !$this->compileExtension($options) or
+            !$this->compileExtension($options, $classInfo, $protoType) or
             !$this->compileHeaderFile() or
             !$this->compileConfigm4File() or
             !$this->compileConfigw32File()
@@ -141,7 +143,29 @@ abstract class Analyzer implements AnalyzerInterface
      *
      * @return bool
      */
-    abstract public function compileExtension($options);
+    public function compileExtension($options, $classInfo, $protoType)
+    {
+        $skeleton = file_get_contents('stubs/skeleton.stub');
+
+        if (!isset($options['no-header'])) {
+            $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
+        } else {
+            $skeleton = str_ireplace('%header%', '', $skeleton);
+        }
+
+        $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
+
+        switch ($protoType) {
+            case 'functions':
+                $skeleton = (new FunctionsAnalyzer)->compileSkeleton($options, $classInfo, $skeleton);
+        }
+
+        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
+        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
+
+
+        return file_put_contents($this->destDir . '/' . $this->extensionName . '.c', trim($skeleton));
+    }
 
     /**
      * Compile the header file body.
