@@ -288,6 +288,7 @@ class extSkel
                 $classInfo['class'] = $class->getName();
                 $classInfo['namespace'] = $class->getProperty('namespace')->getName();
                 $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
+                $classInfo['properties'] = $class->getDefaultProperties();
 
                 $this->analyzer->compile($options, $classInfo, $protoType);
             }

@@ -165,6 +165,9 @@ class Analyzer implements AnalyzerInterface
         switch ($protoType) {
             case 'functions':
                 $skeleton = (new FunctionsAnalyzer)->compileSkeleton($options, $classInfo, $skeleton);
+                break;
+            case 'ini':
+                $skeleton = (new INIAnalyzer)->compileSkeleton($options, $classInfo, $skeleton);
         }
 
         $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);

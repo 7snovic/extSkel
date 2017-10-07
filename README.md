@@ -111,7 +111,7 @@ this will create the required extension files :-
 
 - [x] Lint the output files.
 - [ ] Support objects and classes.
-- [ ] Support INI directives.
+- [x] Support INI directives.
 - [ ] Support phpinfo handling.
 - [ ] Additional options.
     - [x] PHP Arg [enable - with ]
