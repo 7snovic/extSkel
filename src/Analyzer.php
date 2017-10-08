@@ -48,6 +48,13 @@ class Analyzer implements AnalyzerInterface
      */
     public $destDir;
 
+
+    /**
+     * Variable that holds the skeleton stub string
+     *
+     * @var string
+     */
+    public $skeletonStub;
     /**
      * Analyze the no-header option.
      *
@@ -107,6 +114,13 @@ class Analyzer implements AnalyzerInterface
         $this->options['php-arg'] = $phpArg;
     }
 
+    public function setSkeletonStub($skeleton)
+    {
+        $this->skeletonStub = $skeleton;
+
+        return $skeleton;
+    }
+
     /**
      * Compile the extension skeleton and the header file skeleton.
      *
@@ -152,29 +166,30 @@ class Analyzer implements AnalyzerInterface
      */
     public function compileExtension($options, $classInfo, $protoType)
     {
-        $skeleton = file_get_contents('stubs/skeleton.stub');
+        // $skeleton = file_get_contents('stubs/skeleton.stub');
 
         if (!isset($options['no-header'])) {
-            $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
+            $skeleton = str_ireplace('%header%', $this->headerStub, $this->skeletonStub);
         } else {
-            $skeleton = str_ireplace('%header%', '', $skeleton);
+            $this->skeletonStub = str_ireplace('%header%', '', $this->skeletonStub);
         }
 
-        $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
+        $this->skeletonStub = str_ireplace('%footer%', $this->footerStub, $this->skeletonStub);
 
         switch ($protoType) {
             case 'functions':
-                $skeleton = (new FunctionsAnalyzer)->compileSkeleton($options, $classInfo, $skeleton);
+                $this->skeletonStub = (new FunctionsAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
                 break;
             case 'ini':
-                $skeleton = (new INIAnalyzer)->compileSkeleton($options, $classInfo, $skeleton);
+                $this->skeletonStub = (new INIAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
         }
 
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
+        $this->skeletonStub = str_ireplace('%extname%', $this->extensionName, $this->skeletonStub);
+        $this->skeletonStub = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $this->skeletonStub);
 
 
-        return file_put_contents($this->destDir . '/' . $this->extensionName . '.c', trim($skeleton));
+        // return file_put_contents($this->destDir . '/' . $this->extensionName . '.c', trim($this->skeletonStub));
+        return $this->skeletonStub;
     }
 
     /**

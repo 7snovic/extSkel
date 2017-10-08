@@ -19,7 +19,6 @@ class INIAnalyzer extends Analyzer
             throw new \Exception("Entries must declared in INIAnalyzer");
         }
         $entries = $classInfo['properties']['entries'];
-        // str_replace();
         $registerEntries = $unregisterEntries = $displayEntries = '';
         $iniEntries = [];
         if (count($entries) > 0) {
@@ -37,7 +36,6 @@ class INIAnalyzer extends Analyzer
         $skeleton = str_ireplace('%unregister_ini_entries%', $unregisterEntries, $skeleton);
         $skeleton = str_ireplace('%display_ini_entries%', $displayEntries, $skeleton);
         $skeleton = str_ireplace('%ini_entries%', implode(PHP_EOL, $iniEntries), $skeleton);
-        echo $skeleton;exit;
         return $skeleton;
     }
 }

@@ -53,13 +53,6 @@ class extSkel
     protected $parameters = [];
 
     /**
-     * Variable that holds the skeleton stub string
-     *
-     * @var string
-     */
-    public $skeletonStub;
-
-    /**
      * Create a new extSkel instance.
      *
      * @param \AnalyzerInterface $analyzer
@@ -70,7 +63,9 @@ class extSkel
     {
         $this->analyzer = $analyzer;
 
-        $this->skeletonStub = $this->loadSkeletonStub();
+        $this->analyzer->setSkeletonStub(
+            $this->loadSkeletonStub()
+        );
     }
 
     /**
@@ -293,7 +288,7 @@ class extSkel
                 $this->analyzer->compile($options, $classInfo, $protoType);
             }
         }
-        return 1;
+        return file_put_contents($this->analyzer->destDir . '/' . $options['extension'] . '.c', trim($this->analyzer->skeletonStub));
     }
 
     /**
