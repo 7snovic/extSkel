@@ -4,7 +4,7 @@ a modern alternative way to generate PHP Extension skeleton.
 **Remember**, *it's just a skeleton generator, it will not write an entire PHP
 extension for you.*
 
-### Installation :-
+### Installation:-
 
 ```sh
 git clone git@github.com:7snovic/extSkel.git
@@ -16,7 +16,7 @@ then dump the autoload files
 comoposer dump-autoload
 ```
 
-### Usage
+### Usage:-
 
 ```sh
 php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]
@@ -36,20 +36,29 @@ php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]
 
 ---
 
-### Proto File
+### Proto Files:-
 
-Proto file is a php file contains a functions signatures, no need to write the
-full concrete function as the extension will take care only of the function
-name and it's parameters .
+Proto file is a php file contains a Classes definitions, all proto classes **Must**
+lives under `extSkel\Extension` namespace, so you will need to define it at the
+top of your proto file.
 
-the functions **MUST** be `namespaced` with the following
-namespace `hassan\extSkel\Extension`
+For each class you **Must** declare a property that called `$protoType` which
+will points to the type of proto class.
 
-the function parameters can be *Optional* and *type-hinted*
+The current available proto types are : `[functions, ini]`
+
+#### - Functions:-
+When you define a proto class with a `$protoType` with a `functions` as a value,
+`extSkel` will generate an extension skeleton that contains all of the class
+defined methods.
+
+No matters the concrete declaration of those methods, `extSkel` will only parse
+the function name and it's parameters, the function parameters can be
+*Optional* and *type-hinted*
 
 if the parameter has no type-hint the extension by default will compile this parameter as [ZVAL](http://www.phpinternalsbook.com/php7/internal_types/zvals.html)
 
-the available types :-
+The available parameters types :-
 
 - string
 - bool
@@ -57,9 +66,17 @@ the available types :-
 - int
 - if empty the parameter will compiled as zval
 
+#### - INI Entries:-
+When `extSkel` parses a proto class with a `ini` as a value of `$protoType`,
+will consider only the value of `$entries` property, regardless of any other
+defined methods.
+
+The `$entries` property is an associated array with key as an INI name, value
+as a INI value.
+
 ---
 
-### Opt-file
+### Opt-file:-
 
 now you can provide a JSON file as an options file instead of using the command-line options.
 
@@ -88,7 +105,7 @@ Note: this option will disable the command-line options entirely.
 
 ---
 
-### Example
+### Example:-
 
 The package comes with a simple
 [example](https://github.com/7snovic/extSkel/blob/master/examples/hello.php) ,
@@ -99,7 +116,7 @@ you can run this example to generate
 php extSkel --proto="examples/hello.php" --extension="helloWorld" --fast-zpp
 ```
 
-this will create the required extension files :-
+this will create a directory with the extension name, and the following files :-
 - extension file : helloWorld.c .
 - extension header file : php_helloWorld.h .
 - config.m4 file.
@@ -107,7 +124,7 @@ this will create the required extension files :-
 
 ---
 
-### TODO
+### TODO:-
 
 - [x] Lint the output files.
 - [ ] Support objects and classes.
