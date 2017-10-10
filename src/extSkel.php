@@ -173,9 +173,6 @@ class extSkel
                     $this->analyzer->compile($options, $this->functions, $this->parameters);
                 }
             }
-            // return $classInfo;
-
-
         } catch (\Exception $e) {
             echo $e->getMessage();
             exit;
@@ -199,25 +196,6 @@ class extSkel
         }
 
         throw new \Exception("please set a valid path to \"proto\" option\n");
-    }
-
-    /**
-     * Get all the user defined functions from the user space.
-     *
-     * @return array
-     */
-    private function getFunctions()
-    {
-        $classInfo = [];
-        foreach (get_declared_classes() as $className) {
-            $class = new \ReflectionClass($className);
-            if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
-                $classInfo['class'] = $class->getName();
-                $classInfo['namespace'] = $class->getProperty('namespace')->getName();
-                $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-            }
-        }
-        return $classInfo;
     }
 
     /**
@@ -257,7 +235,7 @@ class extSkel
      *
      * @param array $options
      *
-     * @return string|\hassan\extSkel\AnalyzerInterface
+     * @return string|bool
      */
     public function run($options)
     {
@@ -288,7 +266,10 @@ class extSkel
                 $this->analyzer->compile($options, $classInfo, $protoType);
             }
         }
-        return file_put_contents($this->analyzer->destDir . '/' . $options['extension'] . '.c', trim($this->analyzer->skeletonStub));
+        return file_put_contents(
+            $this->analyzer->destDir . '/' . $options['extension'] . '.c',
+            trim($this->analyzer->skeletonStub)
+        );
     }
 
     /**

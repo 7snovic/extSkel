@@ -130,8 +130,6 @@ class Analyzer implements AnalyzerInterface
      */
     public function compile($options, $classInfo, $protoType)
     {
-        // $this->functions = $functions;
-        // $this->parameters = $parameters;
         $this->headerStub = file_get_contents('stubs/header.stub');
         $this->footerStub = file_get_contents('stubs/footer.stub');
 
@@ -166,8 +164,6 @@ class Analyzer implements AnalyzerInterface
      */
     public function compileExtension($options, $classInfo, $protoType)
     {
-        // $skeleton = file_get_contents('stubs/skeleton.stub');
-
         if (!isset($options['no-header'])) {
             $skeleton = str_ireplace('%header%', $this->headerStub, $this->skeletonStub);
         } else {
@@ -187,8 +183,6 @@ class Analyzer implements AnalyzerInterface
         $this->skeletonStub = str_ireplace('%extname%', $this->extensionName, $this->skeletonStub);
         $this->skeletonStub = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $this->skeletonStub);
 
-
-        // return file_put_contents($this->destDir . '/' . $this->extensionName . '.c', trim($this->skeletonStub));
         return $this->skeletonStub;
     }
 
