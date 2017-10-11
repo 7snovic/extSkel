@@ -6,13 +6,15 @@ use extSkel\Compilers\FunctionsCompiler;
 
 class INIAnalyzer extends Analyzer
 {
-    private function filterEntries($classInfo)
-    {
-        if (isset($classInfo['properties']['entries']) === false) {
-            throw new \Exception("Entries must declared in INIAnalyzer");
-        }
-    }
-
+    /**
+     * Compile INI entries skeleton
+     *
+     * @param array $options
+     * @param array $classInfo
+     * @param string $skeleton
+     *
+     * @return string
+     */
     public function compileSkeleton($options, $classInfo, $skeleton)
     {
         if (isset($classInfo['properties']['entries']) === false) {

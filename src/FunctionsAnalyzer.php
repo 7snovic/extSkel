@@ -6,6 +6,13 @@ use extSkel\Compilers\FunctionsCompiler;
 
 class FunctionsAnalyzer extends Analyzer
 {
+    /**
+     * Filter and organize a given array of functions.
+     *
+     * @param array $definedFunctions
+     *
+     * @return \extSkel\Analyzer
+     */
     private function filterFunctions($definedFunctions)
     {
         foreach ($definedFunctions['methods'] as $key => $function) {

@@ -55,6 +55,27 @@ class Analyzer implements AnalyzerInterface
      * @var string
      */
     public $skeletonStub;
+
+    /**
+     * Variable that holds the header stub string.
+     *
+     * @var string
+     */
+    private $headerStub;
+
+    /**
+     * Variable that holds the footer stub string.
+     *
+     * @var string
+     */
+    private $footerStub;
+
+    /**
+     * Extension name.
+     *
+     * @var string
+     */
+    public $extensionName;
     /**
      * Analyze the no-header option.
      *
