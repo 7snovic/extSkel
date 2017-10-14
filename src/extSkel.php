@@ -241,7 +241,9 @@ class extSkel
     {
         if (key_exists('help', $options) or count($options) == 0) {
             return $this->printHelp();
-        } elseif (key_exists('opt-file', $options)) {
+        }
+
+        if (key_exists('opt-file', $options)) {
             $options = $this->parseOptFile($options['opt-file']);
         }
 
@@ -266,10 +268,40 @@ class extSkel
                 $this->analyzer->compile($options, $classInfo, $protoType);
             }
         }
-        return file_put_contents(
-            $this->analyzer->destDir . '/' . $options['extension'] . '.c',
-            trim($this->analyzer->skeletonStub)
-        );
+
+        if ($this->cleanUp()) {
+            return file_put_contents(
+                $this->analyzer->destDir . '/' . $options['extension'] . '.c',
+                trim($this->analyzer->skeletonStub)
+            );
+        }
+    }
+
+    /**
+     * this function perform a clean up for the output
+     * to make sure that there are no place holders exists
+     * after the compiling
+     *
+     * @TODO create a simple factory object to navigate between
+     * [sed, php pcre, internal str_ireplace function]
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    public function cleanUp()
+    {
+        if (shell_exec('command -v sed')) {
+            if ($this->analyzer->skeletonStub = shell_exec(
+                "echo '{$this->analyzer->skeletonStub}' | sed -r 's/\%.*?\%//g'"
+            )) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            throw new \Exception("sed program is not exists");
+        }
     }
 
     /**
