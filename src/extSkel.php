@@ -269,12 +269,11 @@ class extSkel
             }
         }
 
-        if ($this->cleanUp()) {
-            return file_put_contents(
-                $this->analyzer->destDir . '/' . $options['extension'] . '.c',
-                trim($this->analyzer->skeletonStub)
-            );
-        }
+        $outputFileName = $this->analyzer->destDir . '/' . $options['extension'] . '.c';
+        return file_put_contents(
+            $outputFileName,
+            trim($this->analyzer->skeletonStub)
+        ) && $this->cleanUp($outputFileName);
     }
 
     /**
@@ -285,20 +284,16 @@ class extSkel
      * @TODO create a simple factory object to navigate between
      * [sed, php pcre, internal str_ireplace function]
      *
-     * @return bool
+     * @param string $outputFileName
+     *
+     * @return void
      *
      * @throws \Exception
      */
-    public function cleanUp()
+    public function cleanUp($outputFileName)
     {
         if (shell_exec('command -v sed')) {
-            if ($this->analyzer->skeletonStub = shell_exec(
-                "echo '{$this->analyzer->skeletonStub}' | sed -r 's/\%.*?\%//g'"
-            )) {
-                return true;
-            } else {
-                return false;
-            }
+            exec("sed -r -i 's/\%.*?%//g' $outputFileName");
         } else {
             throw new \Exception("sed program is not exists");
         }
