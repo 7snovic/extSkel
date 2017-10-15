@@ -11,7 +11,7 @@ class FunctionsAnalyzer extends Analyzer
      *
      * @param array $definedFunctions
      *
-     * @return \extSkel\Analyzer
+     * @return array
      */
     private function filterFunctions($definedFunctions)
     {
@@ -23,21 +23,23 @@ class FunctionsAnalyzer extends Analyzer
 
             $functionReflection = new \ReflectionMethod($function->class, $function->name);
             if ($functionReflection->isUserDefined()) {
-                $this->functions[$key]['name'] = $functionReflection->getShortName();
-                $this->functions[$key]['namespace'] = $definedFunctions['namespace'];
-                $this->functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
-                $this->functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
+                $functions[$key]['name'] = $functionReflection->getShortName();
+                if (isset($definedFunctions['namespace'])) {
+                    $functions[$key]['namespace'] = $definedFunctions['namespace'];
+                }
+                $functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
+                $functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
                 $this->parameters = [];
                 foreach ($functionReflection->getParameters() as $paramterKey => $paramter) {
                     $this->parameters[$paramterKey]['name'] = $paramter->name;
                     $this->parameters[$paramterKey]['type'] = ($paramter->hasType() ? "{$paramter->getType()}" : null);
                     $this->parameters[$paramterKey]['isRequired'] = $paramter->isOptional() ? 0 : 1;
                 }
-                $this->functions[$key]['parameters'] = $this->parameters;
+                $functions[$key]['parameters'] = $this->parameters;
             }
         }
 
-        return $this;
+        return $functions;
     }
 
     /**
@@ -51,20 +53,19 @@ class FunctionsAnalyzer extends Analyzer
      */
     public function compileSkeleton($options, $classInfo, $skeleton)
     {
-        $this->filterFunctions($classInfo);
-        // $skeleton = file_get_contents('stubs/skeleton.stub');
+        $functions = $this->filterFunctions($classInfo);
 
         $argInfoStub = $functionsStub = '';
-        if (isset($this->functions)) {
+        if (isset($functions)) {
 
             if (key_exists('fast-zpp', $options)) {
                 $this->parametersApi = 'fastzpp';
             }
 
-            $functionsCompiler = new FunctionsCompiler($this->functions, $options['extension'], $this->parametersApi);
+            $functionsCompiler = new FunctionsCompiler($functions, $options['extension'], $this->parametersApi);
             $functionsStub = $functionsCompiler->compile();
 
-            $argInfoCompiler = new ArgInfoCompiler($this->functions, $options['extension']);
+            $argInfoCompiler = new ArgInfoCompiler($functions, $options['extension']);
             $argInfoStub = $argInfoCompiler->compile();
         }
 

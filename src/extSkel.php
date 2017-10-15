@@ -261,7 +261,9 @@ class extSkel
                 $protoType = $class->getDefaultProperties()['protoType'];
 
                 $classInfo['class'] = $class->getName();
-                $classInfo['namespace'] = $class->getProperty('namespace')->getName();
+                if ($class->hasProperty('namespace')) {
+                    $classInfo['namespace'] = $class->getProperty('namespace')->getName();
+                }
                 $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
                 $classInfo['properties'] = $class->getDefaultProperties();
 
