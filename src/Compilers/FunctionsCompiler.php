@@ -52,13 +52,40 @@ class FunctionsCompiler extends AbstractCompiler
         $output = [];
         foreach ($this->functions as $key => $function) {
             $output[$key] = $this->internalCompiler($function);
-            $functionEntries[$key] = self::TAB . "PHP_FE({$this->extension}_{$function['name']},		arginfo_{$this->extension}_{$function['name']})";
+            $functionEntries[$key] = $this->entriesCompiler($function);
         }
 
         return [
             'functions' => implode(PHP_EOL, $output),
-            'functions_entry' => str_ireplace('%FUNCTIONS_ENTRIES%', implode(PHP_EOL, $functionEntries), $functionEntriesStub)
+            'functions_entry' => str_ireplace(
+                '%FUNCTIONS_ENTRIES%',
+                implode(PHP_EOL, $functionEntries),
+                $functionEntriesStub
+            )
         ];
+    }
+
+    /**
+     * Compiles the functions entry stub.
+     *
+     * @param array $function
+     *
+     * @return array
+     */
+    protected function entriesCompiler($function)
+    {
+        $entries = [];
+        if (isset($function['namespace'])) {
+            $entries[] = "ZEND_NS_NAMED_FE('{$function['namespace']}',";
+            $entries[] = "{$function['name']},";
+            $entries[] = "PHP_FN({$this->extension}_{$function['name']}),";
+            $entries[] = "arginfo_{$this->extension}_{$function['name']})";
+        } else {
+            $entries[] = "PHP_FE({$this->extension}_{$function['name']},";
+            $entries[] = "arginfo_{$this->extension}_{$function['name']})";
+        }
+
+        return self::TAB . implode(' ', $entries);
     }
 
     /**
