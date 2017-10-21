@@ -36,14 +36,35 @@ php extSkel --proto="path/to/file" [--extension=extname] [--dest-dir=path]
 
 ---
 
-### Proto Files:-
+### Proto Files & Classes:-
 
 Proto file is a php file contains a Classes definitions, all proto classes **Must**
 lives under `extSkel\Extension` namespace, so you will need to define it at the
 top of your proto file.
 
-For each class you **Must** declare a property that called `$protoType` which
-will points to the type of proto class.
+Currently there are two supported properties that you will need to declare in
+proto class:-
+
+```php
+/**
+ * Declare the extension namespace.
+ *
+ * @var $namespace
+ */
+public $namespace = 'namespace';
+
+/**
+ * Specify the proto class type.
+ *
+ * @var $protoType
+ */
+public $protoType = 'functions';
+```
+
+The `$namespace` property used to define a namespace for your extension.
+
+The `$protoType` property is used to define your proto class type,
+which **Must** be declared in each proto class.
 
 The current available proto types are : `[functions, ini]`
 
@@ -133,5 +154,5 @@ this will create a directory with the extension name, and the following files :-
 - [ ] Additional options.
     - [x] PHP Arg [enable - with ]
     - [x] Provide options as a JSON file instead of command-line options
-- [ ] Support Namespaces.
+- [x] Support Namespaces.
 - [ ] Release the `.phar` version.
