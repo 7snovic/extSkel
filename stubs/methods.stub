@@ -1,0 +1,9 @@
+/* {{{ string %EXTNAME%_%FUNCNAME%( [ string $var ] )
+ */
+PHP_METHOD(%CLASSNAME%, %EXTNAME%_%FUNCNAME%)
+{
+
+%PARAMETERS_STUB%
+
+}
+/* }}}*/
