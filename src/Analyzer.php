@@ -164,9 +164,7 @@ class Analyzer implements AnalyzerInterface
 
         if (
             !$this->compileExtension($options, $classInfo, $protoType) or
-            !$this->compileHeaderFile() or
-            !$this->compileConfigm4File() or
-            !$this->compileConfigw32File()
+            !$this->compileHeaderFile()
         ) {
             return false;
         }
@@ -199,6 +197,10 @@ class Analyzer implements AnalyzerInterface
                 break;
             case 'ini':
                 $this->skeletonStub = (new INIAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
+                break;
+            case 'class':
+                $this->skeletonStub = (new ClassAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
+                break;
         }
 
         $this->skeletonStub = str_ireplace('%extname%', $this->extensionName, $this->skeletonStub);
@@ -230,51 +232,5 @@ class Analyzer implements AnalyzerInterface
         $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
 
         return file_put_contents($this->destDir . '/' . $phpHeader, $skeleton);
-    }
-
-    /**
-     * Compile config.m4 file.
-     *
-     * @return bool
-     */
-    public function compileConfigm4File()
-    {
-        $skeleton = file_get_contents('stubs/config.m4.stub');
-        $configm4 = "config.m4";
-        $phpArg = $this->options['php-arg'];
-
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
-
-        $skeleton = str_ireplace('%PHPARGCAPS%', strtoupper($phpArg), $skeleton);
-        $skeleton = str_ireplace('%PHPARG%', $phpArg, $skeleton);
-
-        if ($this->options['php-arg'] == 'with') {
-            $skeleton = str_ireplace('%PHPARGMSGHEAD%', "for {$this->extensionName} support", $skeleton);
-            $skeleton = str_ireplace('%PHPARGMSG%', "Include {$this->extensionName} support", $skeleton);
-        } else {
-            $skeleton = str_ireplace('%PHPARGMSGHEAD%', "whether to enable {$this->extensionName} support", $skeleton);
-            $skeleton = str_ireplace('%PHPARGMSG%', "Enable {$this->extensionName} support", $skeleton);
-        }
-
-        return file_put_contents($this->destDir . '/' . $configm4, $skeleton);
-    }
-
-    /**
-     * Compile config.w32 file.
-     *
-     * @return bool
-     */
-    public function compileConfigw32File()
-    {
-        $skeleton = file_get_contents('stubs/config.w32.stub');
-        $configw32 = "config.w32";
-
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
-
-        $skeleton = str_ireplace('%PHPARGCAPS%', strtoupper($this->options['php-arg']), $skeleton);
-
-        return file_put_contents($this->destDir . '/' . $configw32, $skeleton);
     }
 }
