@@ -16,6 +16,7 @@ class Analyzer implements AnalyzerInterface
      * @var array
      */
 	protected $functions = [];
+	protected $functionsBag = [];
 
     /**
      * The parameters array which holds the analyzed functions in proto file.
@@ -23,6 +24,7 @@ class Analyzer implements AnalyzerInterface
      * @var array
      */
 	protected $parameters = [];
+	protected $parametersBag = [];
 
     /**
      * The array of options.

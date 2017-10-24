@@ -82,6 +82,8 @@ class extSkel
         $this->analyzer->setSkeletonStub(
             $this->loadSkeletonStub()
         );
+
+        $this->loadStubs();
     }
 
     /**
@@ -98,6 +100,32 @@ class extSkel
         }
 
         throw new \Exception('Can not load skeleton stub');
+    }
+
+    public $skeletonStub;
+    public $headerStub;
+    public $configM4Stub;
+    public $configW32Stub;
+
+    // bootstrap
+    public function loadStubs()
+    {
+        $this->skeletonStub = $this->loadStub('stubs/skeleton.stub');
+
+        $this->headerStub = $this->loadStub('stubs/php_skeleton.stub');
+
+        $this->configM4Stub = $this->loadStub('stubs/config.m4.stub');
+
+        $this->configW32Stub = $this->loadStub('stubs/config.w32.stub');
+    }
+
+    public function loadStub($stub)
+    {
+        if (file_exists($stub)) {
+            return file_get_contents($stub);
+        }
+
+        throw new \Exception('Can not load ' . $stub);
     }
 
     /**
@@ -315,21 +343,21 @@ class extSkel
         $configm4 = "config.m4";
         $phpArg = $this->options['php-arg'];
 
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
+        $this->configM4Stub = str_ireplace('%extname%', $this->extensionName, $this->configM4Stub);
+        $this->configM4Stub = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $this->configM4Stub);
 
-        $skeleton = str_ireplace('%PHPARGCAPS%', strtoupper($phpArg), $skeleton);
-        $skeleton = str_ireplace('%PHPARG%', $phpArg, $skeleton);
+        $this->configM4Stub = str_ireplace('%PHPARGCAPS%', strtoupper($phpArg), $this->configM4Stub);
+        $this->configM4Stub = str_ireplace('%PHPARG%', $phpArg, $this->configM4Stub);
 
         if ($this->options['php-arg'] == 'with') {
-            $skeleton = str_ireplace('%PHPARGMSGHEAD%', "for {$this->extensionName} support", $skeleton);
-            $skeleton = str_ireplace('%PHPARGMSG%', "Include {$this->extensionName} support", $skeleton);
+            $this->configM4Stub = str_ireplace('%PHPARGMSGHEAD%', "for {$this->extensionName} support", $this->configM4Stub);
+            $this->configM4Stub = str_ireplace('%PHPARGMSG%', "Include {$this->extensionName} support", $this->configM4Stub);
         } else {
-            $skeleton = str_ireplace('%PHPARGMSGHEAD%', "whether to enable {$this->extensionName} support", $skeleton);
-            $skeleton = str_ireplace('%PHPARGMSG%', "Enable {$this->extensionName} support", $skeleton);
+            $this->configM4Stub = str_ireplace('%PHPARGMSGHEAD%', "whether to enable {$this->extensionName} support", $this->configM4Stub);
+            $this->configM4Stub = str_ireplace('%PHPARGMSG%', "Enable {$this->extensionName} support", $this->configM4Stub);
         }
 
-        return file_put_contents($this->analyzer->destDir . '/' . $configm4, $skeleton);
+        return file_put_contents($this->analyzer->destDir . '/' . $configm4, $this->configM4Stub);
     }
 
     /**
@@ -342,12 +370,12 @@ class extSkel
         $skeleton = file_get_contents('stubs/config.w32.stub');
         $configw32 = "config.w32";
 
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
+        $this->configW32Stub = str_ireplace('%extname%', $this->extensionName, $this->configW32Stub);
+        $this->configW32Stub = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $this->configW32Stub);
 
-        $skeleton = str_ireplace('%PHPARGCAPS%', strtoupper($this->options['php-arg']), $skeleton);
+        $this->configW32Stub = str_ireplace('%PHPARGCAPS%', strtoupper($this->options['php-arg']), $this->configW32Stub);
 
-        return file_put_contents($this->analyzer->destDir . '/' . $configw32, $skeleton);
+        return file_put_contents($this->analyzer->destDir . '/' . $configw32, $this->configW32Stub);
     }
 
     /**
