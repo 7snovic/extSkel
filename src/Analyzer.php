@@ -165,8 +165,8 @@ class Analyzer implements AnalyzerInterface
         }
 
         if (
-            !$this->compileExtension($options, $classInfo, $protoType) or
-            !$this->compileHeaderFile()
+            !$this->compileExtension($options, $classInfo, $protoType)
+            // !$this->compileHeaderFile()
         ) {
             return false;
         }

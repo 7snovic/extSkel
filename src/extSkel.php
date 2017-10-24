@@ -320,6 +320,7 @@ class extSkel
         $outputFileName = $this->analyzer->destDir . '/' . $options['extension'] . '.c';
 
         if (
+            !$this->compileHeaderFile() or
             !$this->compileConfigm4File() or
             !$this->compileConfigw32File()
         ) {
@@ -376,6 +377,34 @@ class extSkel
         $this->configW32Stub = str_ireplace('%PHPARGCAPS%', strtoupper($this->options['php-arg']), $this->configW32Stub);
 
         return file_put_contents($this->analyzer->destDir . '/' . $configw32, $this->configW32Stub);
+    }
+
+    /**
+     * Compile the header file body.
+     *
+     * @return bool
+     */
+    public function compileHeaderFile()
+    {
+        $skeleton = file_get_contents('stubs/php_skeleton.stub');
+        $phpHeader = "php_{$this->extensionName}.h";
+
+        $this->headerStub = file_get_contents('stubs/header.stub');
+        $this->footerStub = file_get_contents('stubs/footer.stub');
+
+        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
+        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
+
+        if (!isset($this->options['no-header'])) {
+            $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
+        } else {
+            $skeleton = str_ireplace('%header%', '', $skeleton);
+        }
+
+        $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
+        $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
+
+        return file_put_contents($this->analyzer->destDir . '/' . $phpHeader, $skeleton);
     }
 
     /**
