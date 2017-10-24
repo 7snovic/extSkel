@@ -294,30 +294,27 @@ class extSkel
         $options['extension'] = isset($options['extension']) ? $options['extension'] : 'extSkel';
         $options['dest-dir']  = isset($options['dest-dir']) ? $options['dest-dir'] : 'extension/';
         $this->analyzeOptions($options);
-        // $this->analyzeProto($this->protoFile, $options);
+
         $this->loadProtoFile($options['proto']);
 
         $this->extensionName = $options['extension'];
 
-        $classInfo = [];
-        foreach (get_declared_classes() as $className) {
-            $class = new \ReflectionClass($className);
-            if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
+        $this->headerStub = file_get_contents('stubs/header.stub');
+        $this->footerStub = file_get_contents('stubs/footer.stub');
 
-                $protoType = $class->getDefaultProperties()['protoType'];
+        $this->extensionName = $options['extension'];
 
-                $classInfo['class'] = $class->getName();
-                if ($class->hasProperty('namespace')) {
-                    $classInfo['namespace'] = $class->getProperty('namespace')->getName();
-                }
-                $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-                $classInfo['properties'] = $class->getDefaultProperties();
-
-                $this->analyzer->compile($options, $classInfo, $protoType);
-            }
+        if (isset($options['credits'])) {
+            $this->headerStub = str_ireplace('%credits%', $options['credits'], $this->headerStub);
+        } else {
+            $this->headerStub = str_ireplace('%credits%', str_pad("extSkel", 60), $this->headerStub);
         }
 
-        $outputFileName = $this->analyzer->destDir . '/' . $options['extension'] . '.c';
+        $classesBag = $this->analyzer->analyzeProtoFile();
+        $this->optionsBag = $options;
+        foreach ($classesBag as $class) {
+            $this->compileExtension($options, $class, $class['properties']['protoType']);
+        }
 
         if (
             !$this->compileHeaderFile() or
@@ -326,11 +323,54 @@ class extSkel
         ) {
             return false;
         }
-
+        $outputFileName = $this->analyzer->destDir . '/' . $options['extension'] . '.c';
         return file_put_contents(
             $outputFileName,
-            trim($this->analyzer->skeletonStub)
+            trim($this->skeletonStub)
         ) && $this->cleanUp($outputFileName);
+    }
+
+    /**
+     * Compile the extension skeleton body.
+     *
+     * @param array $options
+     * @param array $classInfo
+     * @param string $protoType
+     *
+     * @return bool
+     */
+    public function compileExtension($options, $classInfo, $protoType)
+    {
+        if (!isset($options['no-header'])) {
+            $skeleton = str_ireplace('%header%', $this->headerStub, $this->skeletonStub);
+        } else {
+            $this->skeletonStub = str_ireplace('%header%', '', $this->skeletonStub);
+        }
+
+        $this->skeletonStub = str_ireplace('%footer%', $this->footerStub, $this->skeletonStub);
+
+        switch ($protoType) {
+            case 'functions':
+                $this->skeletonStub = $this->compilerFactory(Compilers\FunctionsCompiler::class, $classInfo);
+                break;
+            case 'ini':
+                $this->skeletonStub = $this->compilerFactory(Compilers\INICompiler::class, $classInfo);
+                break;
+            case 'class':
+                $this->skeletonStub = $this->compilerFactory(Compilers\ClassCompiler::class, $classInfo);
+                break;
+        }
+
+        $this->skeletonStub = str_ireplace('%extname%', $this->extensionName, $this->skeletonStub);
+        $this->skeletonStub = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $this->skeletonStub);
+
+        return $this->skeletonStub;
+    }
+
+    public function compilerFactory($compiler, $classInfo)
+    {
+        return (new $compiler)
+            ->compileSkeleton($this->optionsBag, $classInfo, $this->skeletonStub);
     }
 
     /**

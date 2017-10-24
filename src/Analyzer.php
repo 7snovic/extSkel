@@ -11,6 +11,13 @@ class Analyzer implements AnalyzerInterface
     protected $definedFunctions = [];
 
     /**
+     * The namespace that all the proto functions will be under it.
+     *
+     * @var string
+     */
+    protected $namespace = 'extSkel\Extension';
+
+    /**
      * The functions array which holds the analyzed functions in proto file.
      *
      * @var array
@@ -234,5 +241,55 @@ class Analyzer implements AnalyzerInterface
         $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
 
         return file_put_contents($this->destDir . '/' . $phpHeader, $skeleton);
+    }
+
+    public function analyzeProtoFile()
+    {
+        $classes = get_declared_classes();
+        foreach ($classes as $classKey => $className) {
+            $class = new \ReflectionClass($className);
+            if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
+
+                $protoType = $class->getDefaultProperties()['protoType'];
+
+                $classInfo[$classKey]['class'] = $class->getName();
+                if ($class->hasProperty('namespace')) {
+                    $classInfo[$classKey]['namespace'] = $class->getProperty('namespace')->getName();
+                }
+                $classInfo[$classKey]['methods'] = $this->filterFunctions($class->getMethods(\ReflectionMethod::IS_PUBLIC));
+                $classInfo[$classKey]['properties'] = $class->getDefaultProperties();
+            }
+        }
+        return $classInfo;
+    }
+
+    private function filterFunctions($definedFunctions)
+    {
+        $functions = [];
+        foreach ($definedFunctions as $key => $function) {
+
+            if (in_array($function->name, get_defined_functions()['internal'])) {
+                throw new \Exception("Illegal function name\n");
+            }
+
+            $functionReflection = new \ReflectionMethod($function->class, $function->name);
+            if ($functionReflection->isUserDefined()) {
+                $functions[$key]['name'] = $functionReflection->getShortName();
+                if (isset($definedFunctions['namespace'])) {
+                    $functions[$key]['namespace'] = $definedFunctions['namespace'];
+                }
+                $functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
+                $functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
+                $this->parameters = [];
+                foreach ($functionReflection->getParameters() as $paramterKey => $paramter) {
+                    $this->parameters[$paramterKey]['name'] = $paramter->name;
+                    $this->parameters[$paramterKey]['type'] = ($paramter->hasType() ? "{$paramter->getType()}" : null);
+                    $this->parameters[$paramterKey]['isRequired'] = $paramter->isOptional() ? 0 : 1;
+                }
+                $functions[$key]['parameters'] = $this->parameters;
+            }
+        }
+
+        return $functions;
     }
 }

@@ -34,11 +34,13 @@ class FunctionsCompiler extends AbstractCompiler
      *
      * @return void
      */
-    public function __construct($functions, $extension, $parametersApi)
+    public function init($functions, $extension, $parametersApi)
     {
         $this->functions = $functions;
         $this->extension = $extension;
         $this->parametersApi = $parametersApi;
+
+        return $this;
     }
 
     /**
@@ -105,5 +107,41 @@ class FunctionsCompiler extends AbstractCompiler
         $stub = str_ireplace('%FUNCNAME%', $function['name'], $stub);
 
         return $stub;
+    }
+
+    /**
+     * Compile functions skeleton
+     *
+     * @param array $options
+     * @param array $classInfo
+     * @param string $skeleton
+     *
+     * @return string
+     */
+    public function compileSkeleton($options, $classInfo, $skeleton)
+    {
+        $functions = $classInfo['methods'];
+
+        $argInfoStub = $functionsStub = '';
+        if (isset($functions)) {
+
+            if (key_exists('fast-zpp', $options)) {
+                $this->parametersApi = 'fastzpp';
+            }
+
+            $functionsCompiler = $this->init($functions, $options['extension'], $this->parametersApi);
+            $functionsStub = $this->compile();
+
+            $argInfoCompiler = new ArgInfoCompiler($functions, $options['extension']);
+            $argInfoStub = $argInfoCompiler->compile();
+        }
+
+        $skeleton = str_ireplace('%arginfo_stub%', $argInfoStub, $skeleton);
+        $skeleton = str_ireplace('%functions_stub%', $functionsStub['functions'], $skeleton);
+        $skeleton = str_ireplace('%functions_entry_stub%', $functionsStub['functions_entry'], $skeleton);
+
+        $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
+
+        return $skeleton;
     }
 }
