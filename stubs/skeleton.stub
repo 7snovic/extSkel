@@ -8,6 +8,8 @@
 #include "ext/standard/info.h"
 #include "php_%EXTNAME%.h"
 
+%ZEND_CLASS_ENTRY%
+
 %FUNCTIONS_STUB%
 
 /* {{{ PHP_RINIT_FUNCTION
@@ -28,6 +30,9 @@ PHP_RINIT_FUNCTION(%EXTNAME%)
  */
 PHP_MINIT_FUNCTION(%EXTNAME%)
 {
+
+    %REGISTER_CLASS_ENTRY%
+
 	%REGISTER_INI_ENTRIES%
 
 	return SUCCESS;
@@ -70,7 +75,7 @@ PHP_MINFO_FUNCTION(%EXTNAME%)
 zend_module_entry %EXTNAME%_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"%EXTNAME%",						/* Extension name */
-	%EXTNAME%_functions,				/* zend_function_entry */
+	%zend_function_entry%,				/* zend_function_entry */
 	PHP_MINIT_FUNCTION(%EXTNAME%),		/* PHP_MINIT - Module initialization */
 	PHP_MSHUTDOWN_FUNCTION(%EXTNAME%),	/* PHP_MSHUTDOWN - Module shutdown */
 	PHP_RINIT(%EXTNAME%),				/* PHP_RINIT - Request initialization */
