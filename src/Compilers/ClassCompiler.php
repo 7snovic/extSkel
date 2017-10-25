@@ -1,7 +1,7 @@
 <?php
 namespace extSkel\Compilers;
 
-class FunctionsCompiler extends AbstractCompiler
+class ClassCompiler extends AbstractCompiler
 {
 
     /**
@@ -26,23 +26,25 @@ class FunctionsCompiler extends AbstractCompiler
     protected $functions = [];
 
     protected $stubPath;
+    protected $classInfo;
 
     /**
      * Create a new FunctionsCompiler instance.
      *
-     * @param array $functions
+     * @param array $classInfo
      * @param string $extension
      * @param string $parametersApi
      *
      * @return void
      */
-    public function init($functions, $extension, $parametersApi)
+    public function init($classInfo, $extension, $parametersApi)
     {
-        $this->functions = $functions;
+        $this->functions = $classInfo['methods'];
         $this->extension = $extension;
         $this->parametersApi = $parametersApi;
+        $this->className = $classInfo['className'];
 
-        $this->stubPath = 'stubs/functions.stub';
+        $this->stubPath = 'stubs/methods.stub';
 
         return $this;
     }
@@ -56,6 +58,7 @@ class FunctionsCompiler extends AbstractCompiler
     {
         $functionEntriesStub = file_get_contents('stubs/zend_function_entry.stub');
         $output = [];
+        $functionEntries = [];
         foreach ($this->functions as $key => $function) {
             $output[$key] = $this->internalFunctionsCompiler($function);
             $functionEntries[$key] = $this->entriesCompiler($function);
@@ -80,18 +83,7 @@ class FunctionsCompiler extends AbstractCompiler
      */
     protected function entriesCompiler($function)
     {
-        $entries = [];
-        if (isset($function['namespace'])) {
-            $entries[] = "ZEND_NS_NAMED_FE('{$function['namespace']}',";
-            $entries[] = "{$function['name']},";
-            $entries[] = "PHP_FN({$this->extension}_{$function['name']}),";
-            $entries[] = "arginfo_{$this->extension}_{$function['name']})";
-        } else {
-            $entries[] = "PHP_FE({$this->extension}_{$function['name']},";
-            $entries[] = "arginfo_{$this->extension}_{$function['name']})";
-        }
-
-        return self::TAB . implode(' ', $entries);
+        return self::TAB . "PHP_FE({$this->extension}_{$function['name']}, arginfo_{$this->extension}_{$function['name']})";
     }
 
     /**
@@ -114,7 +106,7 @@ class FunctionsCompiler extends AbstractCompiler
                 $this->parametersApi = 'fastzpp';
             }
 
-            $functionsCompiler = $this->init($functions, $options['extension'], $this->parametersApi);
+            $functionsCompiler = $this->init($classInfo, $options['extension'], $this->parametersApi);
             $functionsStub = $this->compile();
 
             $argInfoCompiler = new ArgInfoCompiler($functions, $options['extension']);
@@ -124,10 +116,30 @@ class FunctionsCompiler extends AbstractCompiler
         $skeleton = str_ireplace('%arginfo_stub%', $argInfoStub, $skeleton);
         $skeleton = str_ireplace('%functions_stub%', $functionsStub['functions'], $skeleton);
         $skeleton = str_ireplace('%functions_entry_stub%', $functionsStub['functions_entry'], $skeleton);
-        $skeleton = str_ireplace('%zend_function_entry%', $this->extension . '_functions', $skeleton);
+
+        $skeleton = str_ireplace('%classname%', $classInfo['className'], $skeleton);
+
+        $skeleton = str_ireplace('%zend_class_entry%', $this->getZendClassEntry(), $skeleton);
+        $skeleton = str_ireplace('%register_class_entry%', $this->getMinitStub(), $skeleton);
+        $skeleton = str_ireplace('%zend_function_entry%', 'NULL', $skeleton);
 
         $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
 
         return $skeleton;
+    }
+
+    private function getZendClassEntry()
+    {
+        return 'zend_class_entry *' . $this->className . '_ce;';
+    }
+
+    private function getMinitStub()
+    {
+        return <<<STUB
+    zend_class_entry tmp_ce;
+        INIT_CLASS_ENTRY(tmp_ce, "{$this->className}", {$this->extension}_functions);
+
+        {$this->className}_ce = zend_register_internal_class(&tmp_ce TSRMLS_CC);
+STUB;
     }
 }

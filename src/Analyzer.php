@@ -151,101 +151,10 @@ class Analyzer implements AnalyzerInterface
         return $skeleton;
     }
 
-    /**
-     * Compile the extension skeleton and the header file skeleton.
-     *
-     * @param array $options
-     *
-     * @return bool
-     */
-    public function compile($options, $classInfo, $protoType)
-    {
-        $this->headerStub = file_get_contents('stubs/header.stub');
-        $this->footerStub = file_get_contents('stubs/footer.stub');
-
-        $this->extensionName = $options['extension'];
-
-        if (isset($options['credits'])) {
-            $this->headerStub = str_ireplace('%credits%', $options['credits'], $this->headerStub);
-        } else {
-            $this->headerStub = str_ireplace('%credits%', str_pad("extSkel", 60), $this->headerStub);
-        }
-
-        if (
-            !$this->compileExtension($options, $classInfo, $protoType)
-            // !$this->compileHeaderFile()
-        ) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * Compile the extension skeleton body.
-     *
-     * @param array $options
-     * @param array $classInfo
-     * @param string $protoType
-     *
-     * @return bool
-     */
-    public function compileExtension($options, $classInfo, $protoType)
-    {
-        if (!isset($options['no-header'])) {
-            $skeleton = str_ireplace('%header%', $this->headerStub, $this->skeletonStub);
-        } else {
-            $this->skeletonStub = str_ireplace('%header%', '', $this->skeletonStub);
-        }
-
-        $this->skeletonStub = str_ireplace('%footer%', $this->footerStub, $this->skeletonStub);
-
-        switch ($protoType) {
-            case 'functions':
-                $this->skeletonStub = (new FunctionsAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
-                break;
-            case 'ini':
-                $this->skeletonStub = (new INIAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
-                break;
-            case 'class':
-                $this->skeletonStub = (new ClassAnalyzer)->compileSkeleton($options, $classInfo, $this->skeletonStub);
-                break;
-        }
-
-        $this->skeletonStub = str_ireplace('%extname%', $this->extensionName, $this->skeletonStub);
-        $this->skeletonStub = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $this->skeletonStub);
-
-        return $this->skeletonStub;
-    }
-
-    /**
-     * Compile the header file body.
-     *
-     * @return bool
-     */
-    public function compileHeaderFile()
-    {
-        $skeleton = file_get_contents('stubs/php_skeleton.stub');
-        $phpHeader = "php_{$this->extensionName}.h";
-
-        $skeleton = str_ireplace('%extname%', $this->extensionName, $skeleton);
-        $skeleton = str_ireplace('%extnamecaps%', strtoupper($this->extensionName), $skeleton);
-
-        if (!isset($this->options['no-header'])) {
-            $skeleton = str_ireplace('%header%', $this->headerStub, $skeleton);
-        } else {
-            $skeleton = str_ireplace('%header%', '', $skeleton);
-        }
-
-        $skeleton = str_ireplace('%footer%', $this->footerStub, $skeleton);
-        $skeleton = str_ireplace('%year%', date("Y"), $skeleton);
-
-        return file_put_contents($this->destDir . '/' . $phpHeader, $skeleton);
-    }
-
     public function analyzeProtoFile()
     {
         $classes = get_declared_classes();
+        $properties = [];
         foreach ($classes as $classKey => $className) {
             $class = new \ReflectionClass($className);
             if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
@@ -253,11 +162,20 @@ class Analyzer implements AnalyzerInterface
                 $protoType = $class->getDefaultProperties()['protoType'];
 
                 $classInfo[$classKey]['class'] = $class->getName();
-                if ($class->hasProperty('namespace')) {
-                    $classInfo[$classKey]['namespace'] = $class->getProperty('namespace')->getName();
-                }
+
                 $classInfo[$classKey]['methods'] = $this->filterFunctions($class->getMethods(\ReflectionMethod::IS_PUBLIC));
-                $classInfo[$classKey]['properties'] = $class->getDefaultProperties();
+                $properties = $class->getDefaultProperties();
+
+                if (isset($properties['namespace'])) {
+                    $classInfo[$classKey]['namespace'] = $properties['namespace'];
+                }
+                if (isset($properties['className'])) {
+                    $classInfo[$classKey]['className'] = $properties['className'];
+                } else {
+                    $classInfo[$classKey]['className'] = $class->getShortName();
+                }
+
+                $classInfo[$classKey]['properties'] = $properties;
             }
         }
         return $classInfo;

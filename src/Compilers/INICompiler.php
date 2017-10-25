@@ -35,6 +35,7 @@ class INICompiler extends AbstractCompiler
         $skeleton = str_ireplace('%unregister_ini_entries%', $unregisterEntries, $skeleton);
         $skeleton = str_ireplace('%display_ini_entries%', $displayEntries, $skeleton);
         $skeleton = str_ireplace('%ini_entries%', implode(PHP_EOL, $iniEntries), $skeleton);
+        $skeleton = str_ireplace('%zend_function_entry%', 'NULL', $skeleton);
         return $skeleton;
     }
 }

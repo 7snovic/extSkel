@@ -186,44 +186,6 @@ class extSkel
     }
 
     /**
-     * Analyze proto file and return a detailed array holding each function
-     * with it's parameters.
-     *
-     * @var string $protoFile
-     * @var array $options
-     *
-     * @return void
-     *
-     * @throws \Exception
-     */
-    public function analyzeProto($protoFile, $options)
-    {
-        try {
-            $this->loadProtoFile($protoFile);
-
-            $classInfo = [];
-            foreach (get_declared_classes() as $className) {
-                $class = new \ReflectionClass($className);
-                if (strstr($class->getNamespaceName(), $this->namespace) !== false && $class->isInternal() === false) {
-
-                    $protoType = $class->getDefaultProperties()['protoType'];
-
-                    $classInfo['class'] = $class->getName();
-                    $classInfo['namespace'] = $class->getProperty('namespace')->getName();
-                    $classInfo['methods'] = $class->getMethods(\ReflectionMethod::IS_PUBLIC);
-
-                    $this->filterFunctions($classInfo);
-
-                    $this->analyzer->compile($options, $this->functions, $this->parameters);
-                }
-            }
-        } catch (\Exception $e) {
-            echo $e->getMessage();
-            exit;
-        }
-    }
-
-    /**
      * Load the given proto file.
      *
      * @var string $protoFile
@@ -240,38 +202,6 @@ class extSkel
         }
 
         throw new \Exception("please set a valid path to \"proto\" option\n");
-    }
-
-    /**
-     * Filter the defined functions and extract only the function under the self::$namespace.
-     *
-     * @param array $definedFunctions
-     *
-     * @return void
-     */
-    private function filterFunctions($definedFunctions)
-    {
-        foreach ($definedFunctions['methods'] as $key => $function) {
-
-            if (in_array($function->name, get_defined_functions()['internal'])) {
-                throw new \Exception("Illegal function name\n");
-            }
-
-            $functionReflection = new \ReflectionMethod($function->class, $function->name);
-            if ($functionReflection->isUserDefined()) {
-                $this->functions[$key]['name'] = $functionReflection->getShortName();
-                $this->functions[$key]['namespace'] = $definedFunctions['namespace'];
-                $this->functions[$key]['parametersCount'] = $functionReflection->getNumberOfParameters();
-                $this->functions[$key]['requiredParametersCount'] = $functionReflection->getNumberOfRequiredParameters();
-                $this->parameters = [];
-                foreach ($functionReflection->getParameters() as $paramterKey => $paramter) {
-                    $this->parameters[$paramterKey]['name'] = $paramter->name;
-                    $this->parameters[$paramterKey]['type'] = ($paramter->hasType() ? "{$paramter->getType()}" : null);
-                    $this->parameters[$paramterKey]['isRequired'] = $paramter->isOptional() ? 0 : 1;
-                }
-                $this->functions[$key]['parameters'] = $this->parameters;
-            }
-        }
     }
 
     /**
