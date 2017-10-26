@@ -43,6 +43,7 @@ class ClassCompiler extends AbstractCompiler
         $this->extension = $extension;
         $this->parametersApi = $parametersApi;
         $this->className = $classInfo['className'];
+        $this->qualifiedClassName = $this->getQualifiedClassName($classInfo);
 
         $this->stubPath = 'stubs/methods.stub';
 
@@ -133,11 +134,20 @@ class ClassCompiler extends AbstractCompiler
         return 'zend_class_entry *' . $this->className . '_ce;';
     }
 
+    private function getQualifiedClassName($classInfo)
+    {
+        if (isset($classInfo['namespace'])) {
+            return $classInfo['namespace'] . '\\\\' . $classInfo['className'];
+        } else {
+            return $classInfo['className'];
+        }
+    }
+
     private function getMinitStub()
     {
         return <<<STUB
     zend_class_entry tmp_ce;
-        INIT_CLASS_ENTRY(tmp_ce, "{$this->className}", {$this->extension}_functions);
+        INIT_CLASS_ENTRY(tmp_ce, "$this->qualifiedClassName", {$this->extension}_functions);
 
         {$this->className}_ce = zend_register_internal_class(&tmp_ce TSRMLS_CC);
 STUB;
