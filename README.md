@@ -66,7 +66,7 @@ The `$namespace` property used to define a namespace for your extension.
 The `$protoType` property is used to define your proto class type,
 which **Must** be declared in each proto class.
 
-The current available proto types are : `[functions, ini]`
+The current available proto types are : `[functions, ini, class]`
 
 #### - Functions:-
 When you define a proto class with a `$protoType` with a `functions` as a value,
@@ -77,7 +77,8 @@ No matters the concrete declaration of those methods, `extSkel` will only parse
 the function name and it's parameters, the function parameters can be
 *Optional* and *type-hinted*
 
-if the parameter has no type-hint the extension by default will compile this parameter as [ZVAL](http://www.phpinternalsbook.com/php7/internal_types/zvals.html)
+if the parameter has no type-hint the extension by default will compile this
+parameter as [ZVAL](http://www.phpinternalsbook.com/php7/internal_types/zvals.html)
 
 The available parameters types :-
 
@@ -86,6 +87,20 @@ The available parameters types :-
 - float
 - int
 - if empty the parameter will compiled as zval
+
+#### - Objects/Classes :-
+As same as functions, it's a proto class that used to write a proto functions that
+will be stubbed into PHP extensions skeleton.
+
+[An example for class proto file](/examples/ext_class.php)
+
+The additional property that the class proto file accepts is the `$className` property,
+that accepts a string value, in case if this property is not defined, the class name will be
+inhereted from the proto class name, in the previous example will be : `extClass`.
+
+
+#####  :warning: `extSkel` does not support defining constructors and magic methods
+
 
 #### - INI Entries:-
 When `extSkel` parses a proto class with a `ini` as a value of `$protoType`,
@@ -148,7 +163,7 @@ this will create a directory with the extension name, and the following files :-
 ### TODO:-
 
 - [x] Lint the output files.
-- [ ] Support objects and classes.
+- [x] Support objects and classes.
 - [x] Support INI directives.
 - [ ] Support phpinfo handling.
 - [ ] Additional options.
