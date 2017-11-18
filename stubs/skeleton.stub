@@ -76,8 +76,8 @@ zend_module_entry %EXTNAME%_module_entry = {
 	STANDARD_MODULE_HEADER,
 	"%EXTNAME%",						/* Extension name */
 	%zend_function_entry%,				/* zend_function_entry */
-	PHP_MINIT_FUNCTION(%EXTNAME%),		/* PHP_MINIT - Module initialization */
-	PHP_MSHUTDOWN_FUNCTION(%EXTNAME%),	/* PHP_MSHUTDOWN - Module shutdown */
+	PHP_MINIT(%EXTNAME%),		/* PHP_MINIT - Module initialization */
+	PHP_MSHUTDOWN(%EXTNAME%),	/* PHP_MSHUTDOWN - Module shutdown */
 	PHP_RINIT(%EXTNAME%),				/* PHP_RINIT - Request initialization */
 	NULL,								/* PHP_RSHUTDOWN - Request shutdown */
 	PHP_MINFO(%EXTNAME%),				/* PHP_MINFO - Module info */
