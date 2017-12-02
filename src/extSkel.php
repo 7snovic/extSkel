@@ -32,25 +32,11 @@ class extSkel
     protected $namespace = 'extSkel\Extension';
 
     /**
-     * The user defined functions which will be in the proto file.
-     *
-     * @var array
-     */
-    protected $definedFunctions = [];
-
-    /**
      * The functions array which holds the analyzed functions in proto file.
      *
      * @var array
      */
     protected $functions = [];
-
-    /**
-     * The parameters array which holds the analyzed functions in proto file.
-     *
-     * @var array
-     */
-    protected $parameters = [];
 
     /**
      * Extension name.

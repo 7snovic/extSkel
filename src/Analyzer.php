@@ -4,34 +4,11 @@ namespace extSkel;
 class Analyzer implements AnalyzerInterface
 {
     /**
-     * The user defined functions which will be in the proto file.
-     *
-     * @var array
-     */
-    protected $definedFunctions = [];
-
-    /**
      * The namespace that all the proto functions will be under it.
      *
      * @var string
      */
     protected $namespace = 'extSkel\Extension';
-
-    /**
-     * The functions array which holds the analyzed functions in proto file.
-     *
-     * @var array
-     */
-	protected $functions = [];
-	protected $functionsBag = [];
-
-    /**
-     * The parameters array which holds the analyzed functions in proto file.
-     *
-     * @var array
-     */
-	protected $parameters = [];
-	protected $parametersBag = [];
 
     /**
      * The array of options.
@@ -41,14 +18,6 @@ class Analyzer implements AnalyzerInterface
     protected $options = [
         'php-arg' => 'enable'
     ];
-
-    /**
-     * The used parameters API.
-     *
-     * @see http://www.phpinternalsbook.com/php7/extensions_design/php_functions.html
-     * @var string
-     */
-    protected $parametersApi = 'zpp';
 
     /**
      * Destination directory.
@@ -65,26 +34,6 @@ class Analyzer implements AnalyzerInterface
      */
     public $skeletonStub;
 
-    /**
-     * Variable that holds the header stub string.
-     *
-     * @var string
-     */
-    private $headerStub;
-
-    /**
-     * Variable that holds the footer stub string.
-     *
-     * @var string
-     */
-    private $footerStub;
-
-    /**
-     * Extension name.
-     *
-     * @var string
-     */
-    public $extensionName;
     /**
      * Analyze the no-header option.
      *
