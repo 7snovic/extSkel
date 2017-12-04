@@ -55,6 +55,34 @@ class extSkel
     ];
 
     /**
+     * The skeleton  stub file contents.
+     *
+     * @var string
+     */
+    public $skeletonStub;
+
+    /**
+     * The header skeleton stub file contents.
+     *
+     * @var string
+     */
+    public $headerStub;
+
+    /**
+     * The config.m4 skeleton stub file contents.
+     *
+     * @var string
+     */
+    public $configM4Stub;
+
+    /**
+     * The config.w32 skeleton stub file contents.
+     *
+     * @var string
+     */
+    public $configW32Stub;
+
+    /**
      * Create a new extSkel instance.
      *
      * @param \AnalyzerInterface $analyzer
@@ -88,12 +116,12 @@ class extSkel
         throw new \Exception('Can not load skeleton stub');
     }
 
-    public $skeletonStub;
-    public $headerStub;
-    public $configM4Stub;
-    public $configW32Stub;
-
-    // bootstrap
+    /**
+     * Bootstrap function to load stub files.
+     *
+     * @return void
+     *
+     */
     public function loadStubs()
     {
         $this->skeletonStub = $this->loadStub('stubs/skeleton.stub');
@@ -105,6 +133,13 @@ class extSkel
         $this->configW32Stub = $this->loadStub('stubs/config.w32.stub');
     }
 
+    /**
+     * Function to load stub file.
+     *
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function loadStub($stub)
     {
         if (file_exists($stub)) {
